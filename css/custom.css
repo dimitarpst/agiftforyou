@@ -380,7 +380,7 @@ swiper-slide {
     color: #ff6f91;
 }
 
-#start-game-btn {
+#start-game-btn, #playMinigamebtn {
     background-color: #ff9aa2;
     border: none;
     padding: 15px 30px;
@@ -575,3 +575,16 @@ swiper-slide {
 .heart.blue { fill: #6ec6ff; }
 .heart.yellow { fill: #ffd166; }
 
+a {
+    color: #ff6f91;
+    text-decoration:none;
+}
+a:hover {
+    color: #ffffff;
+}
+#playMinigamebtn{
+    border: 2px solid transparent;
+}
+#playMinigamebtn:hover {
+    border: 2px solid #ff6f91;
+}
