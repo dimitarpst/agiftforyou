@@ -1,0 +1,577 @@
+body {
+    background-color: #ffe4e6;
+    scroll-behavior: smooth;
+}
+
+#intro h1, #love-story h2, #quiz h2, #reasons h2 {
+    color: #ff6f91;
+}
+
+#enter-btn {
+    background-color: #ff9aa2;
+    border: none;
+    color: white;
+    font-size: 22px;
+    padding: 10px 20px;
+}
+
+#flower-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.flower {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url('../pictures/flower.png');
+    background-size: cover;
+    opacity: 0;
+    animation: fall 6s infinite ease-in-out;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Swiper wrapper to control the size */
+.swiper-wrapper-container {
+    width: 80%;
+    height: 60vh;
+    margin: 0 auto;
+}
+
+/* Swiper container customization */
+.mySwiper {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+swiper-slide {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Swiper Pagination (cute dots) */
+.swiper-pagination-bullet {
+    background-color: #ff6f91 !important;
+    opacity: 0.7;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #ff9aa2 !important;
+    opacity: 1;
+}
+
+/* Navigation arrows */
+.swiper-button-next, .swiper-button-prev {
+    color: #ff6f91 !important;
+    width: 30px;
+    height: 30px;
+}
+
+.swiper-button-next::after, .swiper-button-prev::after {
+    font-size: 20px; /* Adjust arrow size */
+}
+/* Make sure the gallery doesn't overflow */
+.swiper-container {
+    overflow: hidden;
+}
+
+/* Common animation states */
+.fade-in, .slide-in-left, .slide-in-right, .scale-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* When element is in view */
+.fade-in.in-view, .slide-in-left.in-view, .slide-in-right.in-view, .scale-in.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Slide in from the left */
+.slide-in-left {
+    transform: translateX(-100px);
+}
+
+.slide-in-left.in-view {
+    transform: translateX(0);
+}
+
+/* Slide in from the right */
+.slide-in-right {
+    transform: translateX(100px);
+}
+
+.slide-in-right.in-view {
+    transform: translateX(0);
+}
+
+/* Scale in */
+.scale-in {
+    transform: scale(0.8);
+}
+
+.scale-in.in-view {
+    transform: scale(1);
+}
+
+#star-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Behind all content */
+    overflow: hidden;
+}
+
+/* Each star with trail effect */
+.star {
+    position: absolute;
+    width: 50px; /* Slightly smaller */
+    height: 50px;
+    background-image: url('../pictures/star.png');
+    background-size: cover;
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.6); /* Adds a glowing trail effect */
+    animation: twinkle 3s infinite ease-in-out;
+}
+
+/* Twinkle effect */
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5); /* Make them grow slightly */
+    }
+}
+
+/* Moving stars from top left to bottom right */
+@keyframes moveStarRight {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+        transform: translate(100vw, 100vh) rotate(360deg); /* Move and rotate across the screen */
+    }
+}
+
+/* Moving stars from top right to bottom left */
+@keyframes moveStarLeft {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+        transform: translate(-100vw, 100vh) rotate(-360deg); /* Move and rotate in opposite direction */
+    }
+}
+
+/* Custom animation for flowers created on click */
+.clicked-flower {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url('../pictures/flower.png');
+    background-size: cover;
+    opacity: 0;
+    animation: pop 2s ease-out forwards;
+}
+
+/* Define a 'pop' animation that scales and fades in the flower */
+@keyframes pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Increase font size for aww effect */
+#reasons h2 {
+    color: #ff6f91;
+    font-size: 60px;
+}
+
+#reasons ul li {
+    font-size: 40px;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+#reasons p {
+    font-size: 40px;
+    color: #ff9aa2;
+    margin-top: 30px;
+}
+
+/* Heart effect next to reasons */
+.heart {
+    display: inline-block;
+    animation: pulseHeart 2s infinite ease-in-out;
+}
+
+/* Animation for heart pulse */
+@keyframes pulseHeart {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Bounce-in animation for reasons */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover effect for cute interaction */
+#reasons ul li:hover {
+    color: #ff6f91;
+    transform: scale(1.1);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Add glowing heart hover */
+.heart:hover {
+    color: #ffcccb;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+}
+
+/* Default style for the heart particle container (initially hidden) */
+#heart-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease-in-out; /* Smooth fade in/out */
+}
+
+/* Fade in when particles are visible */
+#heart-particles.active {
+    opacity: 1;
+}
+
+
+#avocado-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Make sure it is on top of other content */
+    pointer-events: none; /* Ensure it doesn't interfere with clicks */
+}
+
+/* Neon text styling */
+.neon-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 30px;
+    color: #ff6f91;
+    text-shadow: 0 0 5px #ff6f91, 0 0 10px #ff6f91, 0 0 15px #ff6f91, 0 0 20px #ff6f91;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Overlay text container */
+.overlay-text {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+}
+
+/* Swiper slide customization */
+swiper-slide {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.overlay-text::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+    border-radius: 15px;
+}
+
+.neon-text:hover {
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.5), 0 0 20px rgba(255, 105, 180, 0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 40px rgba(255, 105, 180, 0.5);
+    transition: text-shadow 0.3s ease-in-out;
+}
+
+.personal-note {
+    font-size: 30px;
+    color: #ff9aa2;
+    font-style: italic;
+    display: block;
+    margin-top: 5px;
+}
+
+#quiz-section h2 {
+    color: #ff6f91;
+}
+
+#start-game-btn {
+    background-color: #ff9aa2;
+    border: none;
+    padding: 15px 30px;
+    color: white;
+    font-size: 28px;
+}
+
+.modal-content {
+    background-color: #ffe4e6;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+#next-btn {
+    background-color: #ff6f91;
+    color: white;
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+
+.quiz-option {
+    background-color: #ff9aa2; /* Soft pink */
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 10px;
+    transition:  0.3s ease;
+    border: 2px solid transparent!important;
+}
+
+.quiz-option:hover, .quiz-option:focus {
+    border: 2px solid #ff3f6c !important;
+}
+
+#next-btn {
+    background-color: #ff6f91;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition:  0.3s ease;
+    border: 2px solid transparent!important;
+}
+#next-btn:hover {
+    border: 2px solid #ff3f6c !important;
+}
+
+
+.sad-emoji {
+    position: absolute;
+    font-size: 40px;
+    animation: fall 4s linear forwards;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+.btn-pink {
+    background-color: #ff9aa2;
+    border: none;
+    color: white;
+    font-family: 'Nerko One', cursive;
+}
+
+.modal-body {
+    padding-bottom: 20px; 
+}
+
+.progress {
+    margin-top: 20px;
+}
+
+#love-notes {
+    background-color: #fff0f6;
+}
+
+.note-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.sticky-note {
+    width: 250px;
+    height: 250px;
+    perspective: 1000px;
+    position: relative;
+    cursor: pointer;
+}
+
+.sticky-note .note-front,
+.sticky-note .note-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nerko One', cursive;
+    font-size: 24px;
+    color: white;
+    background-color: #ff9aa2;
+    padding: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.6s ease;
+    transform-style: preserve-3d;
+}
+
+.sticky-note .note-front {
+    background-color: #ffcad4;
+    transform: rotateY(0deg);
+    transition: all 0.3s ease;
+}
+
+.sticky-note .note-back {
+    transform: rotateY(180deg);
+    background-color: #ff6f91;
+    padding: 20px;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.sticky-note:hover .note-front {
+    background-color: #ff6f91;
+}
+.sticky-note:hover .note-back {
+    background-color: #ffa7b7;
+}
+
+.sticky-note.flipped .note-front {
+    transform: rotateY(-180deg);
+}
+
+.sticky-note.flipped .note-back {
+    transform: rotateY(0deg);
+}
+
+#heart-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.heart {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    animation: flyUp 2s ease-in-out forwards;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+@keyframes flyUp {
+    0% {
+        transform: scale(0.5) translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.2) translateY(-200px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Heart colors */
+.heart.pink { fill: #ff6f91; }
+.heart.red { fill: #ff3855; }
+.heart.purple { fill: #c770f0; }
+.heart.blue { fill: #6ec6ff; }
+.heart.yellow { fill: #ffd166; }
+
