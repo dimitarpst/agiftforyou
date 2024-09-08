@@ -9,7 +9,7 @@
 </head>
 <body>
 <!-- Game Overlay -->
-<div id="game-overlay" class="overlay">
+<div id="game-overlay" class="overlay overflow-hidden">
     <div class="overlay-content">
         <h1 class="game-title">Collect the Hearts</h1>
         <button id="play-game-btn" class="btn btn-primary" style="background-color: #ff6f91; border: none;">Play</button>
@@ -17,16 +17,16 @@
 </div>
 
 
-    <div id="game-area">
+    <div id="game-area" class="overflow-hidden">
         <div id="player"></div>
         <div id="score">Score: 0</div>
         <button id="start-btn">Start Game</button>
         <button id="pause-btn">Pause</button>
-        <button id="back-btn" class="ms-5"><a href="index.html">Back</a></button>
+        <button id="back-btn" class="ms-5"><a href="index.html">Back</a></button>     
     </div>
 
     <!-- Game Over Modal -->
-<div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+<div class="modal fade overflow-hidden" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
             <div class="modal-header">
@@ -43,7 +43,7 @@
 </div>
 
 <!-- Pause Menu Modal -->
-<div class="modal fade" id="pauseMenuModal" tabindex="-1" aria-labelledby="pauseMenuModalLabel" aria-hidden="true">
+<div class="modal fade overflow-hidden" id="pauseMenuModal" tabindex="-1" aria-labelledby="pauseMenuModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
             <div class="modal-header">
@@ -64,7 +64,7 @@
 </div>
 
 <!-- Win Modal -->
-<div class="modal fade" id="winModal" tabindex="-1" aria-labelledby="winModalLabel" aria-hidden="true">
+<div class="modal fade overflow-hidden" id="winModal" tabindex="-1" aria-labelledby="winModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #ffe4e6;">
             <div class="modal-header">
@@ -76,6 +76,20 @@
                 <button id="go-back-btn-win" class="btn btn-secondary" style="background-color: #ff6f91; border: none;" >Go Back to Home</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="multiplier-2x-modal" class="multiplier-modal">
+    <div class="modal-content">
+        <h1>2x ❤️</h1>
+        <div class="countdown">3</div>
+    </div>
+</div>
+
+<div id="multiplier-3x-modal" class="multiplier-modal">
+    <div class="modal-content">
+        <h1>3x ❤️</h1>
+        <div class="countdown">3</div>
     </div>
 </div>
 

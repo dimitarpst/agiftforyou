@@ -11,7 +11,7 @@
 <body>
 
     <!-- Introduction Section with Animation -->
-    <section id="intro" class="d-flex justify-content-center align-items-center vh-100 slide-in-left" style="margin-top: 150px;">
+    <div id="intro" class="d-flex justify-content-center align-items-center vh-100 slide-in-left container-fluid" style="margin-top: 150px;">
         <div class="text-center">
             <h1 class="display-3 slide-in-left" style="font-family: 'Pacifico', cursive;">Welcome, My Princess</h1>
             <p class="lead fade-in" style="font-family: 'Caveat', cursive; font-size: 24px;">
@@ -21,18 +21,31 @@
             </p>
             <button id="enter-btn" class="btn btn-primary mt-4 pulse" style="font-family: 'Nerko One', cursive;">Enter Our Story</button>
         </div>
-    </section>
+    </div>
 
-    <section style="padding: 300px;"></section>
+    <div style="padding-bottom: 300px; padding-top: 300px;"></div>
     
     
-    <section id="scroll-love-story" style="padding: 1px;"></section>
+    <div id="scroll-love-story" style="padding: 1px;" class="container-fluid"></div>
     <!-- Love Story & Gallery Section -->
-    <section class="vh-100 fade-in" style="margin-top: 300px; margin-bottom: 300px;">
+    <div class="vh-100 fade-in" style="margin-top: 300px; margin-bottom: 300px;">
         <h2 class="text-center slide-in-top" style="font-family: 'Pacifico', cursive;">My adorable Aylin</h2>
     
         <div class="swiper-wrapper-container">
-            <swiper-container class="mySwiper" centered-slides="true" loop="true" effect="coverflow" coverflow-effect-rotate="30" coverflow-effect-stretch="10" coverflow-effect-depth="200" coverflow-effect-modifier="2" autoplay-delay="5000" slides-per-view="2" space-between="30">
+            <swiper-container class="mySwiper" centered-slides="true" loop="true" effect="coverflow" coverflow-effect-rotate="30" coverflow-effect-stretch="10" coverflow-effect-depth="200" coverflow-effect-modifier="2" autoplay-delay="5000" slides-per-view="2" space-between="30" breakpoints='{
+                "320": {
+                    "slidesPerView": 1
+                },
+                "640": {
+                    "slidesPerView": 1
+                },
+                "768": {
+                    "slidesPerView": 2
+                },
+                "1024": {
+                    "slidesPerView": 2
+                }
+            }'>
                 <swiper-slide style="background-image: url('pictures/slide1.jpg');">
                     <div class="overlay-text">
                         <span class="neon-text">One of the first cute selfies</span>
@@ -82,14 +95,14 @@
 
             </swiper-container>
         </div>
-    </section>
+    </div>
 
-    <section id="love-story" class="vh-100 fade-in" style="margin-top: 300px; margin-bottom: 300px;">
+    <div id="love-story" class="vh-100 fade-in overflow-hidden container-md-fluid container-lg" style="margin-top: 300px; margin-bottom: 300px;">
         <h2 class="text-center slide-in-top" style="font-family: 'Pacifico', cursive;">Best day of my life</h2>
         <div id="avocado-particles"></div>
     
         <div class="swiper-wrapper-container">
-            <swiper-container class="mySwiper" centered-slides="true" loop="true" effect="coverflow" coverflow-effect-rotate="30" coverflow-effect-stretch="10" coverflow-effect-depth="200" coverflow-effect-modifier="2" autoplay-delay="5000" slides-per-view="2" space-between="30">
+            <swiper-container class="mySwiper" centered-slides="true" loop="true" effect="cards" autoplay-delay="5000">
                 <swiper-slide style="background-image: url('pictures/us1.jpg');">
                     <div class="overlay-text">
                         <span class="neon-text">My baby holding me by the throat</span>
@@ -132,10 +145,10 @@
                 </swiper-slide>
             </swiper-container>
         </div>
-    </section>
+    </div>
     
     
-    <section id="reasons" class="vh-100 fade-in" style="margin-bottom: 800px;">
+    <div id="reasons" class="fade-in container-fluid overflow-hidden">
         <h2 class="text-center slide-in-top" style="font-family: 'Pacifico', cursive; font-size: 50px;">Reasons I Love You</h2>
         <ul class="list-unstyled text-center fade-in" style="font-family: 'Caveat', cursive; font-size: 30px;">
             <li><span class="heart">❤️</span> You always make me smile.<span class="heart">❤️</span> <br><small class="personal-note">Every time I see your face, think of you or feel your presence</small></li></br>
@@ -157,24 +170,24 @@
         <p class="text-center fade-in" style="font-family: 'Nerko One', cursive; font-size: 40px;">
             Thank you for being with me for 2 years my love<span class="heart">❤️</span> <br>I can't wait to continue this journey with you!
         </p>
-    </section>
+    </div>
     
 
 
 
     
-    <section id="quiz-section" class="vh-100 fade-in" style="margin-top: 300px;">
+    <div id="quiz-section" class="vh-100 fade-in container-fluid" style="margin-top: 500px;">
         <h2 class="text-center slide-in-top" style="font-family: 'Pacifico', cursive; font-size: 50px;">How Well Do You Know Me?</h2>
         <div class="text-center">
             <!-- Start Game Button -->
             <button id="start-game-btn" class="btn btn-primary pulse" style="font-family: 'Nerko One', cursive; font-size: 30px;">Start Game</button>
         </div>
-    </section>
+    </div>
     
     <!-- Modal Structure -->
-    <div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal fade overflow-hidden " id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
+            <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px; max-height: 90vh; overflow-y: auto;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="quizModalLabel" style="font-family: 'Pacifico', cursive; font-size: 30px;">Let's Play!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -183,13 +196,13 @@
                     <div id="quiz-container">
                         <!-- Quiz question and options will be inserted here dynamically -->
                     </div>
-                     <!-- Progress Bar -->
-    <div id="scoreboard" style="display: none; font-family: 'Caveat', cursive; font-size: 25px; color: #ff6f91; text-align: center; margin-top: 20px;">
-        <p>Score: <span id="score">0</span> / <span id="total-questions"></span></p>
-        <div class="progress" style="height: 20px;">
-            <div id="progress-bar" class="progress-bar" style="width: 0%; background-color: #ff9aa2;"></div>
-        </div>
-    </div>
+                    <!-- Progress Bar -->
+                    <div id="scoreboard" style="display: none; font-family: 'Caveat', cursive; font-size: 25px; color: #ff6f91; text-align: center; margin-top: 20px;">
+                        <p>Score: <span id="score">0</span> / <span id="total-questions"></span></p>
+                        <div class="progress" style="height: 20px;">
+                            <div id="progress-bar" class="progress-bar" style="width: 0%; background-color: #ff9aa2;"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button id="next-btn" class="btn btn-secondary" style="font-family: 'Nerko One', cursive;" disabled>Next</button>
@@ -197,9 +210,10 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Correct Answer Modal -->
-<div class="modal fade" id="correctModal" tabindex="-1" aria-labelledby="correctModalLabel" aria-hidden="true">
+<div class="modal fade overflow-hidden " id="correctModal" tabindex="-1" aria-labelledby="correctModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
             <div class="modal-body text-center">
@@ -212,7 +226,7 @@
 </div>
 
 <!-- Wrong Answer Modal -->
-<div class="modal fade" id="wrongModal" tabindex="-1" aria-labelledby="wrongModalLabel" aria-hidden="true">
+<div class="modal fade overflow-hidden" id="wrongModal" tabindex="-1" aria-labelledby="wrongModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
             <div class="modal-body text-center">
@@ -224,7 +238,7 @@
     </div>
 </div>
 
-<section id="love-notes" class="vh-100 d-flex justify-content-center align-items-center">
+<div id="love-notes" class="vh-100 d-flex justify-content-center align-items-center container-fluid" style="margin-bottom: 250px;">
     <div class="container text-center">
         <h2 class="slide-in-top" style="font-family: 'Pacifico', cursive; font-size: 50px;">Love Notes for You</h2>
         <div class="note-grid">
@@ -245,8 +259,18 @@
         <div id="heart-container"></div>
         <div id="particle-container"></div>
     </div>
-</section>
-    <button  class="btn btn-primary mt-4 pulse d-block mx-auto" id="playMinigamebtn" style="font-family: 'Nerko One', cursive; font-size: 30px;"><a href="minigame.html">Play Minigame</a></button>
+</div>
+<div id="time-together" class="text-center my-5">
+    <h2 class="fade-in" style="font-family: 'Pacifico', cursive; font-size: 40px;">My love, we've been together for:</h2>
+    <p id="time-counter" class="fade-in" style="font-family: 'Caveat', cursive; font-size: 30px;"></p>
+</div>
+<img src="pictures/pompompurin.png" id="pompompurin" class="float-end" width="200px" height="200px" alt="Pompompurin">
+<img src="pictures/cinnamoroll.png" id="cinnamoroll" width="250px" height="200px" alt="Cinnamoroll">
+
+<!-- Heart Particles Container -->
+<div id="heart-particles"></div>
+
+    <button  class="btn btn-primary my-4 pulse d-block mx-auto" id="playMinigamebtn" style="font-family: 'Nerko One', cursive; font-size: 30px;"><a href="minigame.html">Play Minigame</a></button>
 
 
 

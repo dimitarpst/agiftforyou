@@ -588,3 +588,82 @@ a:hover {
 #playMinigamebtn:hover {
     border: 2px solid #ff6f91;
 }
+
+#time-together {
+    background: linear-gradient(135deg, #ffcad4, #ff6f91, #ff9aa2);
+    padding: 30px;
+    border-radius: 25px;
+    font-family: 'Pacifico', cursive;
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(255, 105, 180, 0.4); /* Softer shadow */
+    position: relative;
+    max-width: 80%;
+    margin: 50px auto;
+    border: 2px solid rgba(255, 105, 180, 0.5);
+}
+
+#time-together::before {
+    content: '💖';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 60px;
+    color: rgba(255, 105, 180, 0.7);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+#time-counter {
+    font-family: 'Caveat', cursive;
+    font-size: 35px;
+    color: #fff; /* Make it stand out against the gradient */
+    margin-top: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow to add depth */
+}
+
+/* Glowing heart animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+/* Fade-in animation for the text */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Adding subtle sparkling effects */
+#time-together::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    opacity: 0.3;
+    animation: sparkle 3s linear infinite;
+    z-index: 1;
+}
+
+@keyframes sparkle {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 200px 200px;
+    }
+}
