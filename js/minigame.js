@@ -349,4 +349,12 @@ document.addEventListener('DOMContentLoaded', () => {
         keys[e.key] = false;
     });
 
+    const sensitivitySlider = document.getElementById('sensitivity-slider');
+    const sensitivityValue = document.getElementById('sensitivity-value');
+
+    sensitivitySlider.addEventListener('input', () => {
+    playerSpeed = parseInt(sensitivitySlider.value);
+    sensitivityValue.textContent = playerSpeed; // Update the display next to the slider
+    });
+
 });
