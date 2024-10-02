@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPaused = false;
     let playerSpeed = 7;
     let fallingSpeed = 2;
-    let speedIncreaseInterval;
     let keys = {};
     let volume = 1;
     let animationFrameId;
@@ -39,8 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     playGameBtn.addEventListener('click', () => {
         gameOverlay.style.display = 'none';
         startGame();
-        testIncreaseFallingSpeed();
-
+        // testIncreaseFallingSpeed();
     });
 
     function startGame() {
@@ -51,13 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heartCreationInterval) {
             clearInterval(heartCreationInterval);
         }
-        if (speedIncreaseInterval) {
-            clearInterval(speedIncreaseInterval);
-        }
         startBtn.style.display = 'none';
         pauseBtn.style.display = 'inline-block';
         heartCreationInterval = setInterval(createFallingHeart, 2000);
-        speedIncreaseInterval = setInterval(increaseFallingSpeed, 5000);
+        increaseFallingSpeed();
+
     
         requestAnimationFrame(updatePlayerPosition);
     }
@@ -129,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             if (checkTopCollision(player, heart)) {
                 score += pointsPerHeart;
+                increaseFallingSpeed();
                 updateScore(score);
                 heart.remove();
                 clearInterval(heartFall);
@@ -163,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showWinModal() {
         clearInterval(gameInterval);
-        clearInterval(speedIncreaseInterval);
         cancelAnimationFrame(animationFrameId);
         const hearts = document.querySelectorAll('.falling-heart');
         hearts.forEach(heart => {
@@ -200,9 +196,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function increaseFallingSpeed() {
-        const baseSpeed = 3;
-        const maxSpeed = 9;
-        const accelerationFactor = 0.05;
+        const baseSpeed = 2;
+        const maxSpeed = 10;
+        const accelerationFactor = 0.035;
     
         fallingSpeed = baseSpeed + (1 - Math.exp(-accelerationFactor * score)) * (maxSpeed - baseSpeed);
         fallingSpeed = Math.min(fallingSpeed, maxSpeed);
@@ -242,8 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showMultiplierAnnouncement(multiplier) {
+        updateMultiplierDisplay(multiplier);
         isPaused = true;
-        clearInterval(speedIncreaseInterval);
         let modal;
         if (multiplier === 2) {
             modal = document.getElementById('multiplier-2x-modal');
@@ -263,24 +259,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(countdownInterval);
                 modal.style.display = 'none';
                 isPaused = false;
-                speedIncreaseInterval = setInterval(increaseFallingSpeed, 5000);
+                increaseFallingSpeed();
             }
         }, 1000);
+    }
+
+    function updateMultiplierDisplay(multiplier) {
+        const multiplierIndicator = document.getElementById('multiplier-indicator');
+        multiplierIndicator.textContent = `${multiplier}x`;
     }
     
 
     function updateScore(newScore) {
         const heartEmoji = "❤️";
         scoreDisplay.textContent = `${heartEmoji} x ${newScore}`;
+        scoreDisplay.style.position = "absolute";
+        scoreDisplay.style.top = "10px";
+        scoreDisplay.style.left = "20px";
+        scoreDisplay.style.fontSize = "30px";
+        scoreDisplay.style.color = "white";
+        scoreDisplay.style.fontFamily = "'Pacifico', cursive";
+        scoreDisplay.style.background = "linear-gradient(45deg, #ff9aa2, #ff6f91)";
+        scoreDisplay.style.padding = "10px 20px";
+        scoreDisplay.style.borderRadius = "12px";
+        scoreDisplay.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+        scoreDisplay.style.border = "2px solid #ffffff";
+        scoreDisplay.style.textShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
     }
+    
+    
 
     function togglePause() {
         isPaused = !isPaused;
         if (isPaused) {
-            clearInterval(speedIncreaseInterval);
             openPauseMenu();
         } else {
-            speedIncreaseInterval = setInterval(increaseFallingSpeed, 5000);
+            increaseFallingSpeed();
         }
         pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
     }
@@ -299,7 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showGameOverModal() {
         clearInterval(gameInterval);
-        clearInterval(speedIncreaseInterval);
         cancelAnimationFrame(animationFrameId);
         const hearts = document.querySelectorAll('.falling-heart');
         hearts.forEach(heart => {
@@ -314,9 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
         hearts.forEach(heart => heart.remove());
         if (heartCreationInterval) {
             clearInterval(heartCreationInterval);
-        }
-        if (speedIncreaseInterval) {
-            clearInterval(speedIncreaseInterval);
         }
         score = 0;
         updateScore(0);
@@ -383,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sensitivitySlider.addEventListener('input', () => {
     playerSpeed = parseInt(sensitivitySlider.value);
-    sensitivityValue.textContent = playerSpeed; // Update the display next to the slider
+    sensitivityValue.textContent = playerSpeed;
     });
 
 });

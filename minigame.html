@@ -20,7 +20,7 @@
 
     <div id="game-area" class="overflow-hidden">
         <div id="player"></div>
-        <div id="score">Score: 0</div>
+        <div id="score"></div>
         <button id="start-btn">Start Game</button>
         <button id="pause-btn">Pause</button>
         <button id="back-btn" class="ms-5"><a href="index.html">Back</a></button>
@@ -117,7 +117,23 @@
         </div>
     </div>
 
+    <div id="multiplier-indicator" style="
+        position: absolute; 
+        top: 10px; 
+        right: 20px; 
+        font-size: 30px; 
+        color: white; 
+        font-family: 'Pacifico', cursive;
+        background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+        padding: 10px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: 2px solid #ffffff;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);">
+        1x
+    </div>
 
+    
     <audio id="collect-sound" src="pictures/collect.mp3" preload="auto"></audio>
     <audio id="not-collect-sound" src="pictures/notcollect.mp3" preload="auto"></audio>
 

@@ -108,21 +108,19 @@ a:hover {
     color: #ffffff;
 }
 
-/* Overlay to cover the game area */
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.75); /* Dark semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10; /* Ensure it's above everything else */
+    z-index: 10;
 }
 
-/* Centered content inside the overlay */
 .overlay-content {
     text-align: center;
     color: white;
@@ -133,24 +131,22 @@ a:hover {
     margin-bottom: 20px;
 }
 
-/* Style the Play button */
 #play-game-btn {
     font-size: 24px;
     padding: 15px 30px;
 }
 
-/* Multiplier Modal */
 .multiplier-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Blurred background */
-    display: none; /* Hidden by default */
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 20; /* Ensure it's above other elements */
+    z-index: 20;
 }
 
 .multiplier-modal .modal-content {
@@ -158,7 +154,7 @@ a:hover {
     color: white;
     font-family: 'Pacifico', cursive;
     font-size: 50px;
-    background: none; /* No background for modal content */
+    background: none;
 }
 
 .multiplier-modal .countdown {

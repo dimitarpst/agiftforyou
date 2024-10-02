@@ -381,8 +381,7 @@ swiper-slide {
 }
 
 #start-game-btn, 
-#playMinigamebtn1, 
-#playMinigamebtn2 {
+#playMinigamebtn1, #playMinigamebtn2 {
     background-color: #ff9aa2;
     border: none;
     padding: 15px 30px;
