@@ -380,7 +380,9 @@ swiper-slide {
     color: #ff6f91;
 }
 
-#start-game-btn, #playMinigamebtn {
+#start-game-btn, 
+#playMinigamebtn1, 
+#playMinigamebtn2 {
     background-color: #ff9aa2;
     border: none;
     padding: 15px 30px;
@@ -582,10 +584,12 @@ a {
 a:hover {
     color: #ffffff;
 }
-#playMinigamebtn{
+#playMinigamebtn1,
+#playMinigamebtn2{
     border: 2px solid transparent;
 }
-#playMinigamebtn:hover {
+#playMinigamebtn1:hover,
+#playMinigamebtn2:hover {
     border: 2px solid #ff6f91;
 }
 

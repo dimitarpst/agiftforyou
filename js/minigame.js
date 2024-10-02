@@ -32,12 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let heartCreationInterval;
     let hasShown2xPopup = false;
     let hasShown3xPopup = false;
+    let hasShown4xPopup = false;
 
     const gameOverlay = document.getElementById('game-overlay');
     const playGameBtn = document.getElementById('play-game-btn');
     playGameBtn.addEventListener('click', () => {
         gameOverlay.style.display = 'none';
         startGame();
+        testIncreaseFallingSpeed();
+
     });
 
     function startGame() {
@@ -130,18 +133,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 heart.remove();
                 clearInterval(heartFall);
     
-                if (score >= 35 && !hasShown2xPopup) {
+                if (score >= 30 && !hasShown2xPopup) {
                     pointsPerHeart = 2;
                     hasShown2xPopup = true;
                     showMultiplierAnnouncement(2);
                     return;
                 }
-                if (score >= 80 && !hasShown3xPopup) {
+                if (score >= 60 && !hasShown3xPopup) {
                     pointsPerHeart = 3;
                     hasShown3xPopup = true;
                     showMultiplierAnnouncement(3);
                     return;
                 }
+                if (score >= 90 && !hasShown4xPopup) {
+                    pointsPerHeart = 4;
+                    hasShown4xPopup = true;
+                    showMultiplierAnnouncement(4);
+                    return;
+                }
+                
     
                 if (score >= 150) {
                     showWinModal();
@@ -190,8 +200,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function increaseFallingSpeed() {
-        fallingSpeed += 0.5;
+        const baseSpeed = 3;
+        const maxSpeed = 9;
+        const accelerationFactor = 0.05;
+    
+        fallingSpeed = baseSpeed + (1 - Math.exp(-accelerationFactor * score)) * (maxSpeed - baseSpeed);
+        fallingSpeed = Math.min(fallingSpeed, maxSpeed);
     }
+     
+//TEST
+    // function testIncreaseFallingSpeed() {
+    //     console.log("Starting test for increaseFallingSpeed...");
+    //     const testScores = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140];
+    //     testScores.forEach((testScore) => {
+    //         score = testScore;
+    //         increaseFallingSpeed();
+    //         console.log(`Score: ${score}, Falling Speed: ${fallingSpeed}`);
+    //     });
+    //     console.log("Test completed.");
+    // }
 
     document.addEventListener('keydown', (e) => {
         keys[e.key] = true;
@@ -222,6 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
             modal = document.getElementById('multiplier-2x-modal');
         } else if (multiplier === 3) {
             modal = document.getElementById('multiplier-3x-modal');
+        } else if(multiplier === 4){
+            modal = document.getElementById('multiplier-4x-modal');
         }
         const countdownElement = modal.querySelector('.countdown');
         modal.style.display = 'flex';
