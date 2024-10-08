@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/minigame.css">
 </head>
-
+ 
 <body>
     <div id="game-overlay" class="overlay overflow-hidden">
         <div class="overlay-content">
@@ -19,12 +19,21 @@
     </div>
 
     <div id="game-area" class="overflow-hidden">
-        <div id="player"></div>
-        <div id="score"></div>
-        <button id="start-btn">Start Game</button>
+        <div id="player">
+            <img id="shield-overlay" src="" alt="Shield">
+        </div>
+        <div id="score" class="text-white"></div>
+        <div id="timer" class="text-white"></div>
+    <div id="magnet-timer" style="display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); text-align: center;">
+        <div id="magnet-icon" class="display-1 text-white">🧲</div>
+        <div id="magnet-countdown" class="display-1 text-white"></div>
+    </div>
+        
+        <div id="magnet-range"></div>
+        <button id="start-btn"></button>
         <button id="pause-btn">Pause</button>
         <button id="back-btn" class="ms-5"><a href="index.html">Back</a></button>
-    </div>
+        </div>
 
     <div class="modal fade overflow-hidden" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel"
         aria-hidden="true">
@@ -73,6 +82,7 @@
                         style="background-color: #ff9aa2; border: none;">Restart</button>
                     <button id="exit-game-btn" class="btn btn-danger"
                         style="background-color: #ff6f91; border: none;">Exit</button>
+                    <button id="fullscreen-btn" class="btn btn-warning" style="background-color: #ff6f91; border: none;">Fullscreen</button>
                 </div>
             </div>
         </div>
@@ -95,45 +105,6 @@
             </div>
         </div>
     </div>
-
-    <div id="multiplier-2x-modal" class="multiplier-modal">
-        <div class="modal-content">
-            <h1>2x ❤️</h1>
-            <div class="countdown">3</div>
-        </div>
-    </div>
-
-    <div id="multiplier-3x-modal" class="multiplier-modal">
-        <div class="modal-content">
-            <h1>3x ❤️</h1>
-            <div class="countdown">3</div>
-        </div>
-    </div>
-
-    <div id="multiplier-4x-modal" class="multiplier-modal">
-        <div class="modal-content">
-            <h1>4x ❤️</h1>
-            <div class="countdown">3</div>
-        </div>
-    </div>
-
-    <div id="multiplier-indicator" style="
-        position: absolute; 
-        top: 10px; 
-        right: 20px; 
-        font-size: 30px; 
-        color: white; 
-        font-family: 'Pacifico', cursive;
-        background: linear-gradient(45deg, #ff9aa2, #ff6f91);
-        padding: 10px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        border: 2px solid #ffffff;
-        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);">
-        1x
-    </div>
-
-    
     <audio id="collect-sound" src="pictures/collect.mp3" preload="auto"></audio>
     <audio id="not-collect-sound" src="pictures/notcollect.mp3" preload="auto"></audio>
 

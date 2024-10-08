@@ -12,12 +12,14 @@ body {
 
 #player {
     position: absolute;
-    bottom: 20px;
+    bottom: -35px;
+    left: calc(50% - 50px);
     width: 100px;
     height: 100px;
-    background-image: url('../pictures/basket.png');
+    background-image: url('../pictures/basket.svg');
     background-size: contain;
     background-repeat: no-repeat;
+    z-index: 3;
 }
 
 .falling-heart {
@@ -30,36 +32,48 @@ body {
     background-repeat: no-repeat;
 }
 
+.falling-shield {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 40px;
+    text-align: center;
+}
+
+
 #score, #timer {
     position: absolute;
     top: 10px;
     font-family: 'Pacifico', cursive;
-    font-size: 24px;
+    font-size: 18px;
     color: #ff6f91;
-    z-index: 100;
+    z-index: 9;
 }
 
-#score {
-    left: 10px;
-}
-
-#timer {
-    right: 10px;
-}
-
-#start-btn, #pause-btn, #back-btn {
+#start-btn, #pause-btn{
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 10px;
+    right: 20px;
     padding: 10px 20px;
     font-size: 20px;
     font-family: 'Nerko One', cursive;
     color: white;
-    background-color: #ff6f91;
-    border: none;
-    border-radius: 10px;
     cursor: pointer;
+    position: absolute;
+    font-size: 18px;
+    z-index: 9;
+    background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+    filter:opacity(70%);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#start-btn:focus-visible, #pause-btn:focus-visible{
+    outline: none !important;
 }
 
 #pause-btn {
@@ -67,9 +81,22 @@ body {
 }
 
 #back-btn {
-    left: 20px;
-    bottom: 20px;
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 20px;
+    filter: opacity(70%);
+    font-family: 'Nerko One', cursive;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
     background-color: #ff9aa2;
+    z-index: 9;
+}
+#back-btn a{
+    color: white ;
 }
 
 .modal-content {
@@ -132,7 +159,7 @@ a:hover {
 }
 
 #play-game-btn {
-    font-size: 24px;
+    font-size: 18px;
     padding: 15px 30px;
 }
 
@@ -160,4 +187,103 @@ a:hover {
 .multiplier-modal .countdown {
     font-size: 40px;
     margin-top: 20px;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-family: 'Pacifico', cursive;
+    font-size: 18px;
+    z-index: 9;
+    background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+    filter:opacity(70%);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#timer {
+    position: absolute;
+    top: 65px;
+    left: 20px;
+    font-family: 'Pacifico', cursive;
+    font-size: 18px;
+    z-index: 9;
+    background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+    filter:opacity(70%);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#score, #timer {
+    width: 100px; /* Set the same width for both */
+}
+.falling-clock {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 40px;
+    text-align: center;
+}
+
+.falling-magnet {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    text-align: center;
+    rotate: 120deg;
+}
+
+#magnet-range {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #ff6f9163;
+    display: none;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+#magnet-range.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+#magnet-range.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+#shield-overlay {
+    display: none;
+    z-index: 1;
+    pointer-events: none;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 50%;
 }
