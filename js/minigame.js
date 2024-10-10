@@ -29,17 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let isTouchingBasket = false;
     let heartCreationInterval;
     let clockCreationInterval;
-    let magnetCreationInterval;
-    let magnetEffectInterval;
-    let magnetTimeout;
-    let magnetActive = false;
     let shieldActive = false;
     let shieldStacks = 0;
     let timeRemaining = 60;
     let timerInterval;
     let missedHearts = 0;
-
-
 
     const gameOverlay = document.getElementById('game-overlay');
     const playGameBtn = document.getElementById('play-game-btn');
@@ -116,9 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (score < 0) {
                     clearInterval(heartFall);
                     showGameOverModal();
-                } else if (magnetActive) {
-                    return;
-                }
+                } 
             } else {
                 heart.style.top = `${heartTop + fallingSpeed}px`;
             }
@@ -197,8 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = !isPaused;
         if (isPaused) {
             clearInterval(timerInterval);
-            clearInterval(magnetEffectInterval);
-            clearTimeout(magnetTimeout);
             openPauseMenu();
         } else {
             timerInterval = setInterval(() => {
@@ -209,13 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     showGameOverModal();
                 }
             }, 1000);
-            increaseFallingSpeed();
-            if (magnetActive) {
-                activateMagnetPower(magnetDuration);
-            }
         }
         pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
     }
+    
+    
     
     
     function openPauseMenu() {
@@ -242,23 +230,17 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
         clearInterval(heartCreationInterval);
         clearInterval(clockCreationInterval);
-        clearInterval(magnetCreationInterval);
-        clearInterval(magnetEffectInterval);
-        clearTimeout(magnetTimeout);
+        clearInterval(shieldCreationInterval);
         cancelAnimationFrame(animationFrameId);
     
         const hearts = document.querySelectorAll('.falling-heart');
         const clocks = document.querySelectorAll('.falling-clock');
-        const magnets = document.querySelectorAll('.falling-magnet');
         const shields = document.querySelectorAll('.falling-shield');
         
         hearts.forEach(heart => heart.remove());
         clocks.forEach(clock => clock.remove());
-        magnets.forEach(magnet => magnet.remove());
         shields.forEach(shield => shield.remove())
     
-        const magnetRangeElement = document.getElementById('magnet-range');
-        magnetRangeElement.style.display = 'none';
         finalScore.textContent = score;
         gameOverModal.show();
     }
@@ -354,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.style.display = 'inline-block';
         heartCreationInterval = setInterval(createFallingHeart, 2000);
         clockCreationInterval = setInterval(() => createFallingClock(), Math.random() * 4000 + 7456);
-        magnetCreationInterval = setInterval(() => createFallingMagnet(), Math.random() * 10000 + 15000);
         shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -400,33 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 20);
     }
 
-    function createFallingMagnet() {
-        if (isPaused || timeRemaining <= 0) return;
-        
-        const magnet = document.createElement('div');
-        magnet.classList.add('falling-magnet');
-        magnet.innerHTML = '🧲';
-        magnet.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
-        gameArea.appendChild(magnet);
-        
-        let magnetFall = setInterval(() => {
-            if (isPaused) return;
-    
-            let magnetTop = parseInt(window.getComputedStyle(magnet).getPropertyValue('top'));
-            if (magnetTop > gameArea.offsetHeight - 40) {
-                magnet.remove();
-                clearInterval(magnetFall);
-            } else {
-                magnet.style.top = `${magnetTop + fallingSpeed}px`;
-            }
-    
-            if (checkTopCollision(player, magnet)) {
-                activateMagnetPower();
-                magnet.remove();
-                clearInterval(magnetFall);
-            }
-        }, 20);
-    }
 
     function createFallingShield() {
         if (isPaused || timeRemaining <= 0 || shieldStacks >= 3) return; // Only create shield if stacks are less than 3
@@ -456,87 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 20);
     }
 
-    function activateMagnetPower(remainingDuration = 5000) {
-        const magnetRangeElement = document.getElementById('magnet-range');
-        const magnetRange = 200;
-        
-            magnetActive = true;
-            magnetRangeElement.style.display = 'block';
-            magnetRangeElement.classList.add('fade-in');
-            magnetRangeElement.style.width = `${magnetRange * 2}px`;
-            magnetRangeElement.style.height = `${magnetRange * 2}px`;
-
-            function updateMagnetRangePosition() {
-                const playerRect = player.getBoundingClientRect();
-                magnetRangeElement.style.left = `${playerRect.left + playerRect.width / 2 - magnetRange}px`;
-                magnetRangeElement.style.top = `${playerRect.top + playerRect.height / 2 - magnetRange}px`;
-            }
-
-            document.querySelectorAll('.in-magnet-range').forEach(obj => {
-                obj.classList.remove('in-magnet-range');
-            });
-
-            magnetEffectInterval = setInterval(() => {
-                updateMagnetRangePosition();
-                        const objects = [
-            ...document.querySelectorAll('.falling-heart'),
-            ...document.querySelectorAll('.falling-clock'),
-            ...document.querySelectorAll('.falling-shield')
-        ];
-        objects.forEach(obj => {
-            let objRect = obj.getBoundingClientRect();
-            let playerRect = player.getBoundingClientRect();
-    
-            let distanceX = objRect.x - playerRect.x;
-            let distanceY = objRect.y - playerRect.y;
-            let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-    
-            if (distance < magnetRange || obj.classList.contains('in-magnet-range')) {
-                obj.classList.add('in-magnet-range');
-                obj.style.left = `${objRect.left - distanceX * 0.1}px`;
-                obj.style.top = `${objRect.top - distanceY * 0.1}px`;
-            }
-        });
-    }, 20);
-    
-        magnetTimeout = setTimeout(() => {
-            clearInterval(magnetEffectInterval);
-            magnetRangeElement.classList.remove('fade-in');
-            magnetRangeElement.classList.add('fade-out');
-            setTimeout(() => {
-                magnetRangeElement.classList.remove('fade-out');
-                magnetRangeElement.style.display = 'none';
-                magnetActive = false;
-            }, 500);
-        }, remainingDuration);
-    
-        displayMagnetTimer(remainingDuration / 1000);
-    }
-    
-    
-    function displayMagnetTimer(duration) {
-        const magnetTimer = document.getElementById('magnet-timer');
-        const magnetCountdown = document.getElementById('magnet-countdown');
-        magnetTimer.style.display = 'block';
-
-        let timeLeft = duration;
-        magnetCountdown.textContent = timeLeft;
-    
-        let timerInterval = setInterval(() => {
-            if (!isPaused) {
-                timeLeft--;
-                magnetCountdown.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    magnetTimer.style.display = 'none';
-                }
-            }
-        }, 1000);
-    }
-    
     function activateShieldPower() {
         const playerElement = document.getElementById('player');
-        
         if (shieldStacks < 3) {
             shieldStacks++;
             updateShieldVisual();
