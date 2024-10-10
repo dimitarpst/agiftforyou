@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let missedHearts = 0;
 
-    
+
 
     const gameOverlay = document.getElementById('game-overlay');
     const playGameBtn = document.getElementById('play-game-btn');
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(magnetEffectInterval);
         clearTimeout(magnetTimeout);
         cancelAnimationFrame(animationFrameId);
-
+    
         const hearts = document.querySelectorAll('.falling-heart');
         const clocks = document.querySelectorAll('.falling-clock');
         const magnets = document.querySelectorAll('.falling-magnet');
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clocks.forEach(clock => clock.remove());
         magnets.forEach(magnet => magnet.remove());
         shields.forEach(shield => shield.remove())
-
+    
         const magnetRangeElement = document.getElementById('magnet-range');
         magnetRangeElement.style.display = 'none';
         finalScore.textContent = score;
@@ -459,45 +459,45 @@ document.addEventListener('DOMContentLoaded', () => {
     function activateMagnetPower(remainingDuration = 5000) {
         const magnetRangeElement = document.getElementById('magnet-range');
         const magnetRange = 200;
-    
-        magnetActive = true;
-        magnetRangeElement.style.display = 'block';
-        magnetRangeElement.classList.add('fade-in');
-        magnetRangeElement.style.width = `${magnetRange * 2}px`;
-        magnetRangeElement.style.height = `${magnetRange * 2}px`;
-    
-        function updateMagnetRangePosition() {
-            const playerRect = player.getBoundingClientRect();
-            magnetRangeElement.style.left = `${playerRect.left + playerRect.width / 2 - magnetRange}px`;
-            magnetRangeElement.style.top = `${playerRect.top + playerRect.height / 2 - magnetRange}px`;
-        }
-    
-        document.querySelectorAll('.in-magnet-range').forEach(obj => {
-            obj.classList.remove('in-magnet-range');
-        });
         
-        magnetEffectInterval = setInterval(() => {
-            updateMagnetRangePosition();
-            const objects = [
-                ...document.querySelectorAll('.falling-heart'), 
-                ...document.querySelectorAll('.falling-clock'), 
-                ...document.querySelectorAll('.falling-shield')
-            ];
-            objects.forEach(obj => {
-                let objRect = obj.getBoundingClientRect();
-                let playerRect = player.getBoundingClientRect();
-    
-                let distanceX = objRect.x - playerRect.x;
-                let distanceY = objRect.y - playerRect.y;
-                let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-    
-                if (distance < magnetRange || obj.classList.contains('in-magnet-range')) {
-                    obj.classList.add('in-magnet-range');
-                    obj.style.left = `${objRect.left - distanceX * 0.1}px`;
-                    obj.style.top = `${objRect.top - distanceY * 0.1}px`;
-                }
+            magnetActive = true;
+            magnetRangeElement.style.display = 'block';
+            magnetRangeElement.classList.add('fade-in');
+            magnetRangeElement.style.width = `${magnetRange * 2}px`;
+            magnetRangeElement.style.height = `${magnetRange * 2}px`;
+
+            function updateMagnetRangePosition() {
+                const playerRect = player.getBoundingClientRect();
+                magnetRangeElement.style.left = `${playerRect.left + playerRect.width / 2 - magnetRange}px`;
+                magnetRangeElement.style.top = `${playerRect.top + playerRect.height / 2 - magnetRange}px`;
+            }
+
+            document.querySelectorAll('.in-magnet-range').forEach(obj => {
+                obj.classList.remove('in-magnet-range');
             });
-        }, 20);
+
+            magnetEffectInterval = setInterval(() => {
+                updateMagnetRangePosition();
+                        const objects = [
+            ...document.querySelectorAll('.falling-heart'),
+            ...document.querySelectorAll('.falling-clock'),
+            ...document.querySelectorAll('.falling-shield')
+        ];
+        objects.forEach(obj => {
+            let objRect = obj.getBoundingClientRect();
+            let playerRect = player.getBoundingClientRect();
+    
+            let distanceX = objRect.x - playerRect.x;
+            let distanceY = objRect.y - playerRect.y;
+            let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    
+            if (distance < magnetRange || obj.classList.contains('in-magnet-range')) {
+                obj.classList.add('in-magnet-range');
+                obj.style.left = `${objRect.left - distanceX * 0.1}px`;
+                obj.style.top = `${objRect.top - distanceY * 0.1}px`;
+            }
+        });
+    }, 20);
     
         magnetTimeout = setTimeout(() => {
             clearInterval(magnetEffectInterval);
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const magnetTimer = document.getElementById('magnet-timer');
         const magnetCountdown = document.getElementById('magnet-countdown');
         magnetTimer.style.display = 'block';
-    
+
         let timeLeft = duration;
         magnetCountdown.textContent = timeLeft;
     
@@ -565,16 +565,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('fullscreen-btn').addEventListener('click', () => {
-        const gameArea = document.documentElement; // Get the entire document to be fullscreen
-        if (gameArea.requestFullscreen) {
-            gameArea.requestFullscreen();
-        } else if (gameArea.mozRequestFullScreen) { // For Firefox
-            gameArea.mozRequestFullScreen();
-        } else if (gameArea.webkitRequestFullscreen) { // For Chrome, Safari, and Opera
-            gameArea.webkitRequestFullscreen();
-        } else if (gameArea.msRequestFullscreen) { // For IE/Edge
-            gameArea.msRequestFullscreen();
+        if (!document.fullscreenElement) {
+            const gameArea = document.documentElement;
+            if (gameArea.requestFullscreen) {
+                gameArea.requestFullscreen();
+            } else if (gameArea.mozRequestFullScreen) {
+                gameArea.mozRequestFullScreen();
+            } else if (gameArea.webkitRequestFullscreen) {
+                gameArea.webkitRequestFullscreen();
+            } else if (gameArea.msRequestFullscreen) {
+                gameArea.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { 
+                document.msExitFullscreen();
+            }
         }
     });
+    
     
 });
