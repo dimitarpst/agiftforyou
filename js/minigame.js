@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.log(`Magnet active, time left: ${Math.ceil(remainingTime / 1000)}s`);
                 }
-            }, 1000);
+            }, 20);
     
             magnetTimeout = setTimeout(() => {
                 clearInterval(magnetInterval);
