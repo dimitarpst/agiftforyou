@@ -41,6 +41,17 @@ body {
     text-align: center;
 }
 
+.falling-magnet {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 40px;
+    text-align: center;
+    transform: rotate(45deg);
+}
+
+
 
 #score, #timer {
     position: absolute;

@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeRemaining = 60;
     let timerInterval;
     let missedHearts = 0;
+    
 
     const gameOverlay = document.getElementById('game-overlay');
     const playGameBtn = document.getElementById('play-game-btn');
@@ -81,49 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function createFallingHeart() {
-        if (isPaused || score < 0) return;
-    
-        const heart = document.createElement('div');
-        heart.classList.add('falling-heart');
-        heart.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
-        gameArea.appendChild(heart);
-    
-        let heartFall = setInterval(() => {
-            if (isPaused) return;
-    
-            let heartTop = parseInt(window.getComputedStyle(heart).getPropertyValue('top'));
-            if (heartTop > gameArea.offsetHeight - 40) {
-                heart.remove();
-                clearInterval(heartFall);
-                notCollectSound.play();
-                missedHearts++;
-                if (!shieldActive || shieldStacks === 0) {
-                    score -= 3;
-                } else {
-                    if (missedHearts % 1 === 0 && shieldStacks > 0) {
-                        shieldStacks--;
-                        updateShieldVisual();
-                    }
-                }
-                updateScore(score);
-                if (score < 0) {
-                    clearInterval(heartFall);
-                    showGameOverModal();
-                } 
-            } else {
-                heart.style.top = `${heartTop + fallingSpeed}px`;
-            }
-    
-            if (checkTopCollision(player, heart)) {
-                score += pointsPerHeart;
-                increaseFallingSpeed();
-                updateScore(score);
-                heart.remove();
-                clearInterval(heartFall);
-            }
-        }, 20);
-    }
+
 
     document.getElementById('play-again-btn-win').addEventListener('click', () => {
         resetGame();
@@ -189,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = !isPaused;
         if (isPaused) {
             clearInterval(timerInterval);
+            clearInterval(magnetCreationInterval);
             openPauseMenu();
         } else {
             timerInterval = setInterval(() => {
@@ -199,12 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     showGameOverModal();
                 }
             }, 1000);
+            magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 10000 + 15000);
         }
         pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
     }
-    
-    
-    
     
     function openPauseMenu() {
         pauseScore.textContent = score;
@@ -337,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         heartCreationInterval = setInterval(createFallingHeart, 2000);
         clockCreationInterval = setInterval(() => createFallingClock(), Math.random() * 4000 + 7456);
         shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
+        magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 10000 + 15000);
         timerInterval = setInterval(() => {
             timeRemaining--;
             updateTimer(timeRemaining);
@@ -351,6 +310,50 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTimer(time) {
         const timerDisplay = document.getElementById('timer');
         timerDisplay.textContent = `🕒 ${time}`;
+    }
+
+    function createFallingHeart() {
+        if (isPaused || score < 0) return;
+    
+        const heart = document.createElement('div');
+        heart.classList.add('falling-heart');
+        heart.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+        gameArea.appendChild(heart);
+    
+        let heartFall = setInterval(() => {
+            if (isPaused) return;
+    
+            let heartTop = parseInt(window.getComputedStyle(heart).getPropertyValue('top'));
+            if (heartTop > gameArea.offsetHeight - 40) {
+                heart.remove();
+                clearInterval(heartFall);
+                notCollectSound.play();
+                missedHearts++;
+                if (!shieldActive || shieldStacks === 0) {
+                    score -= 3;
+                } else {
+                    if (missedHearts % 1 === 0 && shieldStacks > 0) {
+                        shieldStacks--;
+                        updateShieldVisual();
+                    }
+                }
+                updateScore(score);
+                if (score < 0) {
+                    clearInterval(heartFall);
+                    showGameOverModal();
+                } 
+            } else {
+                heart.style.top = `${heartTop + fallingSpeed}px`;
+            }
+    
+            if (checkTopCollision(player, heart)) {
+                score += pointsPerHeart;
+                increaseFallingSpeed();
+                updateScore(score);
+                heart.remove();
+                clearInterval(heartFall);
+            }
+        }, 20);
     }
 
     function createFallingClock() {
@@ -409,6 +412,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
+
+    function createFallingMagnet() {
+        if (isPaused || timeRemaining <= 0) return;
+    
+        const magnet = document.createElement('div');
+        magnet.classList.add('falling-magnet');
+        magnet.innerHTML = '🧲';
+        magnet.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+        gameArea.appendChild(magnet);
+    
+        let magnetFall = setInterval(() => {
+            if (isPaused) return;
+    
+            let magnetTop = parseInt(window.getComputedStyle(magnet).getPropertyValue('top'));
+            if (magnetTop > gameArea.offsetHeight - 40) {
+                magnet.remove();
+                clearInterval(magnetFall);
+            } else {
+                magnet.style.top = `${magnetTop + fallingSpeed}px`;
+            }
+    
+            if (checkTopCollision(player, magnet)) {
+                activateMagnetEffect();
+                magnet.remove();
+                clearInterval(magnetFall);
+            }
+        }, 20);
+    }
+
+    function activateMagnetEffect() {
+    console.log("Magnet effect activated!");
+    }
+
 
     function activateShieldPower() {
         const playerElement = document.getElementById('player');
