@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const notCollectSound = document.getElementById('not-collect-sound');
     const restartGameBtn = document.getElementById('restart-game-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
-    
+
+    //LET variables
     let score = 0;
     let isPaused = false;
     let playerSpeed = 7;
@@ -34,15 +35,52 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeRemaining = 60;
     let timerInterval;
     let missedHearts = 0;
-    
+    let initialMagnetDuration = 6000;
+    let remainingMagnetDuration = 0;
+    let magnetActive = false;
+    let magnetPaused = false;
+    let magnetTimeout;
+    let magnetInterval;
+    let magnetEndTime = 0;
 
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            const gameArea = document.documentElement;
+            if (gameArea.requestFullscreen) {
+                gameArea.requestFullscreen();
+            } else if (gameArea.mozRequestFullScreen) {
+                gameArea.mozRequestFullScreen();
+            } else if (gameArea.webkitRequestFullscreen) {
+                gameArea.webkitRequestFullscreen();
+            } else if (gameArea.msRequestFullscreen) {
+                gameArea.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { 
+                document.msExitFullscreen();
+            }
+        }
+    });
+
+    // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
+    
+    function openPauseMenu() {
+        pauseScore.textContent = score;
+        volumeControl.value = volume;
+        pauseMenuModal.show();
+    }
     const gameOverlay = document.getElementById('game-overlay');
     const playGameBtn = document.getElementById('play-game-btn');
     playGameBtn.addEventListener('click', () => {
         gameOverlay.style.display = 'none';
         startGame();
     });
-
     bottomLine.style.position = 'absolute';
     bottomLine.style.height = '4px';
     bottomLine.style.width = '100%';
@@ -50,10 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
     bottomLine.style.bottom = '20px';
     bottomLine.style.zIndex = '2';
     gameArea.appendChild(bottomLine);
-
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
-    resumeGameBtn.addEventListener('click', resumeGame);
+    resumeGameBtn.addEventListener('click', () => {
+        pauseMenuModal.hide();
+        togglePause();
+    });
     playAgainBtn.addEventListener('click', () => {
         resetGame();
         gameOverModal.hide();
@@ -81,9 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
-
-
     document.getElementById('play-again-btn-win').addEventListener('click', () => {
         resetGame();
         const winModal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
@@ -94,21 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     });
 
-    function checkTopCollision(player, heart) {
+    const sensitivitySlider = document.getElementById('sensitivity-slider');
+    const sensitivityValue = document.getElementById('sensitivity-value');
+
+    sensitivitySlider.addEventListener('input', () => {
+        playerSpeed = parseInt(sensitivitySlider.value);
+        sensitivityValue.textContent = playerSpeed;
+    });
+
+    // <---------------------------------OBJECT HANDLING-------------------------------------------->
+    function checkTopCollision(player, fallingObject) {
         let playerRect = player.getBoundingClientRect();
-        let heartRect = heart.getBoundingClientRect();
+        let fallingObjectRect = fallingObject.getBoundingClientRect();
         if (
-            heartRect.y + heartRect.height > playerRect.y &&
-            heartRect.y < playerRect.y + playerRect.height / 2 &&
-            playerRect.x < heartRect.x + heartRect.width &&
-            playerRect.x + playerRect.width > heartRect.x
+            fallingObjectRect.y + fallingObjectRect.height > playerRect.y &&
+            fallingObjectRect.y < playerRect.y + playerRect.height / 2 &&
+            playerRect.x < fallingObjectRect.x + fallingObjectRect.width &&
+            playerRect.x + playerRect.width > fallingObjectRect.x
         ) {
             collectSound.play();
             return true;
         }
         return false;
     }
-
     function increaseFallingSpeed() {
         const baseSpeed = 2;
         const maxSpeed = 10;
@@ -117,11 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fallingSpeed = baseSpeed + (1 - Math.exp(-accelerationFactor * score)) * (maxSpeed - baseSpeed);
         fallingSpeed = Math.min(fallingSpeed, maxSpeed);
     }
-     
+
+    // <---------------------------------MOVEMENT-------------------------------------------->
     document.addEventListener('keydown', (e) => {
         keys[e.key] = true;
     });
-
     document.addEventListener('keyup', (e) => {
         keys[e.key] = false;
     });
@@ -137,89 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         animationFrameId = requestAnimationFrame(updatePlayerPosition);
-    }
-
-    function updateScore(newScore) {
-        const heartEmoji = "❤️";
-        scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
-    }
-    
-    function togglePause() {
-        isPaused = !isPaused;
-        if (isPaused) {
-            clearInterval(timerInterval);
-            clearInterval(magnetCreationInterval);
-            openPauseMenu();
-        } else {
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                updateTimer(timeRemaining);
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    showGameOverModal();
-                }
-            }, 1000);
-            magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 10000 + 15000);
-        }
-        pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
-    }
-    
-    function openPauseMenu() {
-        pauseScore.textContent = score;
-        volumeControl.value = volume;
-        pauseMenuModal.show();
-    }
-
-    function resumeGame() {
-        pauseMenuModal.hide();
-        isPaused = false;
-        pauseBtn.textContent = 'Pause';
-        timerInterval = setInterval(() => {
-            timeRemaining--;
-            updateTimer(timeRemaining);
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                showGameOverModal();
-            }
-        }, 1000);
-    }
-    
-    function showGameOverModal() {
-        clearInterval(timerInterval);
-        clearInterval(heartCreationInterval);
-        clearInterval(clockCreationInterval);
-        clearInterval(shieldCreationInterval);
-        cancelAnimationFrame(animationFrameId);
-    
-        const hearts = document.querySelectorAll('.falling-heart');
-        const clocks = document.querySelectorAll('.falling-clock');
-        const shields = document.querySelectorAll('.falling-shield');
-        
-        hearts.forEach(heart => heart.remove());
-        clocks.forEach(clock => clock.remove());
-        shields.forEach(shield => shield.remove())
-    
-        finalScore.textContent = score;
-        gameOverModal.show();
-    }
-    
-
-    function resetGame() {
-        const hearts = document.querySelectorAll('.falling-heart');
-        hearts.forEach(heart => heart.remove());
-        if (heartCreationInterval) {
-            clearInterval(heartCreationInterval);
-        }
-        score = 0;
-        updateScore(0);
-        fallingSpeed = 2;
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-        }
-        startGame();
-        pauseBtn.textContent = 'Pause';
-        shieldStacks = 0;
-        updateShieldVisual();
     }
 
     gameArea.addEventListener('touchstart', handleTouchStart);
@@ -272,14 +234,74 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keyup', (e) => {
         keys[e.key] = false;
     });
+    // <---------------------------------GAME START/STOP STUFF-------------------------------------------->
 
-    const sensitivitySlider = document.getElementById('sensitivity-slider');
-    const sensitivityValue = document.getElementById('sensitivity-value');
 
-    sensitivitySlider.addEventListener('input', () => {
-        playerSpeed = parseInt(sensitivitySlider.value);
-        sensitivityValue.textContent = playerSpeed;
-    });
+    function updateScore(newScore) {
+        const heartEmoji = "❤️";
+        scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
+    }
+    function togglePause() {
+        isPaused = !isPaused;
+        console.log("Paused state:", isPaused);
+        
+        if (isPaused) {
+            console.log("Game paused.");
+            clearInterval(timerInterval);
+            pauseMagnetEffect();
+            openPauseMenu();
+        } else {
+            console.log("Game resumed.");
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimer(timeRemaining);
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    showGameOverModal();
+                }
+            }, 1000);
+    
+            resumeMagnetEffect();
+        }
+    
+        pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    }
+
+    function showGameOverModal() {
+        clearInterval(timerInterval);
+        clearInterval(heartCreationInterval);
+        clearInterval(clockCreationInterval);
+        clearInterval(shieldCreationInterval);
+        cancelAnimationFrame(animationFrameId);
+    
+        const hearts = document.querySelectorAll('.falling-heart');
+        const clocks = document.querySelectorAll('.falling-clock');
+        const shields = document.querySelectorAll('.falling-shield');
+        
+        hearts.forEach(heart => heart.remove());
+        clocks.forEach(clock => clock.remove());
+        shields.forEach(shield => shield.remove())
+    
+        finalScore.textContent = score;
+        gameOverModal.show();
+    }
+    function resetGame() {
+        const hearts = document.querySelectorAll('.falling-heart');
+        hearts.forEach(heart => heart.remove());
+        if (heartCreationInterval) {
+            clearInterval(heartCreationInterval);
+        }
+        score = 0;
+        updateScore(0);
+        fallingSpeed = 2;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        startGame();
+        pauseBtn.textContent = 'Pause';
+        shieldStacks = 0;
+        updateShieldVisual();
+    }
 
     function startGame() {
         score = 0;
@@ -295,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         heartCreationInterval = setInterval(createFallingHeart, 2000);
         clockCreationInterval = setInterval(() => createFallingClock(), Math.random() * 4000 + 7456);
         shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
-        magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 10000 + 15000);
+        magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 1000 + 4000);
         timerInterval = setInterval(() => {
             timeRemaining--;
             updateTimer(timeRemaining);
@@ -312,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timerDisplay.textContent = `🕒 ${time}`;
     }
 
+    // <---------------------------------HEART-------------------------------------------->
     function createFallingHeart() {
         if (isPaused || score < 0) return;
     
@@ -355,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
-
+    // <---------------------------------CLOCK-------------------------------------------->
     function createFallingClock() {
         if (isPaused || timeRemaining <= 0) return;
     
@@ -383,8 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
-
-
+    // <---------------------------------SHIELD-------------------------------------------->
     function createFallingShield() {
         if (isPaused || timeRemaining <= 0 || shieldStacks >= 3) return; // Only create shield if stacks are less than 3
         
@@ -412,6 +434,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
+
+    function activateShieldPower() {
+        const playerElement = document.getElementById('player');
+        if (shieldStacks < 3) {
+            shieldStacks++;
+            updateShieldVisual();
+        }
+        shieldActive = true;
+    }
+
+    function updateShieldVisual() {
+        const shieldOverlay = document.getElementById('shield-overlay');
+        if (!shieldOverlay) {
+            console.error('Shield overlay element not found!');
+            return;
+        }
+        if (shieldStacks === 1) {
+            shieldOverlay.src = './pictures/shield1.png';
+            shieldOverlay.style.display = 'block';
+        } else if (shieldStacks === 2) {
+            shieldOverlay.src = './pictures/shield2.png';
+            shieldOverlay.style.display = 'block';
+        } else if (shieldStacks === 3) {
+            shieldOverlay.src = './pictures/shield3.png';
+            shieldOverlay.style.display = 'block';
+        } else {
+            shieldOverlay.style.display = 'none';
+        }
+    }
+    // <---------------------------------MAGNET-------------------------------------------->
+
+    const magnetRange = 400; // Adjust the range as needed
 
     function createFallingMagnet() {
         if (isPaused || timeRemaining <= 0) return;
@@ -442,63 +496,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function activateMagnetEffect() {
-    console.log("Magnet effect activated!");
-    }
-
-
-    function activateShieldPower() {
-        const playerElement = document.getElementById('player');
-        if (shieldStacks < 3) {
-            shieldStacks++;
-            updateShieldVisual();
-        }
-        shieldActive = true;
-    }
-
-    function updateShieldVisual() {
-        const shieldOverlay = document.getElementById('shield-overlay');
-        if (!shieldOverlay) {
-            console.error('Shield overlay element not found!');
+        if (magnetActive) {
+            // If magnet is already active, add 6000 ms to the remaining time
+            remainingMagnetDuration += 6000;
+            magnetEndTime = Date.now() + remainingMagnetDuration;
+            console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
         }
-        if (shieldStacks === 1) {
-            shieldOverlay.src = './pictures/shield1.png';
-            shieldOverlay.style.display = 'block';
-        } else if (shieldStacks === 2) {
-            shieldOverlay.src = './pictures/shield2.png';
-            shieldOverlay.style.display = 'block';
-        } else if (shieldStacks === 3) {
-            shieldOverlay.src = './pictures/shield3.png';
-            shieldOverlay.style.display = 'block';
-        } else {
-            shieldOverlay.style.display = 'none';
-        }
+    
+        console.log("Magnet effect activated!");
+        magnetActive = true;
+        remainingMagnetDuration = initialMagnetDuration;
+        magnetEndTime = Date.now() + remainingMagnetDuration;
+    
+        // Log remaining time every second
+        magnetInterval = setInterval(() => {
+            if (isPaused) return;
+    
+            let now = Date.now();
+            let remainingTime = magnetEndTime - now;
+            remainingMagnetDuration = remainingTime;
+    
+            if (remainingTime <= 0) {
+                clearInterval(magnetInterval);
+                magnetActive = false;
+                console.log("Magnet effect ended.");
+            } else {
+                console.log(`Magnet active, time left: ${Math.ceil(remainingTime / 1000)}s`);
+            }
+        }, 20);
     }
 
-    document.getElementById('fullscreen-btn').addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            const gameArea = document.documentElement;
-            if (gameArea.requestFullscreen) {
-                gameArea.requestFullscreen();
-            } else if (gameArea.mozRequestFullScreen) {
-                gameArea.mozRequestFullScreen();
-            } else if (gameArea.webkitRequestFullscreen) {
-                gameArea.webkitRequestFullscreen();
-            } else if (gameArea.msRequestFullscreen) {
-                gameArea.msRequestFullscreen();
-            }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { 
-                document.msExitFullscreen();
-            }
-        }
-    });
+    function pauseMagnetEffect() {
+        if (magnetActive) {
+            magnetPaused = true;
+            remainingMagnetDuration = magnetEndTime - Date.now();
+            clearTimeout(magnetTimeout);
+            clearInterval(magnetInterval);
+            magnetActive = false;
+            console.log("Magnet effect paused. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
+        }    
+    }
     
+    function resumeMagnetEffect() {
+        if (magnetPaused && remainingMagnetDuration > 0) {
+            console.log("Resuming magnet effect. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
+            magnetPaused = false;
+            magnetActive = true;
+            magnetEndTime = Date.now() + remainingMagnetDuration;
+    
+            magnetInterval = setInterval(() => {
+                if (isPaused) return;
+    
+                let now = Date.now();
+                let remainingTime = magnetEndTime - now;
+                remainingMagnetDuration = remainingTime;
+    
+                if (remainingTime <= 0) {
+                    clearInterval(magnetInterval);
+                    magnetActive = false;
+                    console.log("Magnet effect ended.");
+                } else {
+                    console.log(`Magnet active, time left: ${Math.ceil(remainingTime / 1000)}s`);
+                }
+            }, 1000);
+    
+            magnetTimeout = setTimeout(() => {
+                clearInterval(magnetInterval);
+                magnetActive = false;
+                console.log("Magnet effect ended.");
+            }, remainingMagnetDuration);
+        }
+    }
     
 });
