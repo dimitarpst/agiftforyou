@@ -357,9 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 notCollectSound.play();
                 missedHearts++;
                 if (!shieldActive || shieldStacks === 0) {
+                    showFloatingText('-3 ❤️', player.offsetLeft, player.offsetTop, 'red');
                     score -= 3;
                 } else {
                     if (missedHearts % 1 === 0 && shieldStacks > 0) {
+                        showFloatingText('-1 🛡️', player.offsetLeft, player.offsetTop, 'red');
                         shieldStacks--;
                         updateShieldVisual();
                     }
@@ -374,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             if (checkTopCollision(player, heart)) {
+                showFloatingText('+1 ❤️', player.offsetLeft, player.offsetTop, 'green');
                 score += pointsPerHeart;
                 increaseFallingSpeed();
                 updateScore(score);
@@ -404,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             if (checkTopCollision(player, clock)) {
+                showFloatingText('+5 🕒', player.offsetLeft, player.offsetTop, 'white');
                 timeRemaining += 5;
                 clock.remove();
                 clearInterval(clockFall);
@@ -442,6 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function activateShieldPower() {
         const playerElement = document.getElementById('player');
         if (shieldStacks < 3) {
+            showFloatingText('+1 🛡️', player.offsetLeft, player.offsetTop, 'white');
             shieldStacks++;
             updateShieldVisual();
         }
@@ -468,7 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     // <---------------------------------MAGNET-------------------------------------------->
-
     const magnetRangeRadius = 200;
 
     function createFallingMagnet() {
@@ -501,12 +505,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateMagnetEffect() {
         if (magnetActive) {
+            showFloatingText('+6s 🧲', player.offsetLeft, player.offsetTop, 'white');
             remainingMagnetDuration += 6000;
             magnetEndTime = Date.now() + remainingMagnetDuration;
             // console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
         }
-    
+        showFloatingText('+6s 🧲', player.offsetLeft, player.offsetTop, 'white');
         // console.log("Magnet effect activated!");
         magnetActive = true;
         remainingMagnetDuration = initialMagnetDuration;
@@ -640,5 +645,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 10);
         }
     }
+    // <---------------------------------PARTICLES-------------------------------------------->
+
+    function showFloatingText(text, x, y, color = 'white') {
+        const indicator = document.createElement('div');
+        indicator.textContent = text;
+        indicator.classList.add('floating-text');
+        indicator.style.color = color;
+    
+        const randomOffset = Math.floor(Math.random() * 20) - 10; // Random between -10 and 10
+        indicator.style.left = `${x + randomOffset}px`;
+    
+        indicator.style.top = `${y}px`;
+        document.getElementById('floating-indicators').appendChild(indicator);
+    
+        setTimeout(() => {
+            indicator.remove();
+        }, 2000);
+    }
+    
     
 });

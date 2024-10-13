@@ -270,3 +270,28 @@ a:hover {
     position: absolute;
     left: 50%;
 }
+
+#floating-indicators {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.floating-text {
+    position: absolute;
+    font-size: 24px;
+    color: white;
+    animation: floatAway 2s forwards;
+    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes floatAway {
+    0% {
+        opacity: 1;
+        transform: translateY(-120px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-170px);
+    }
+}
