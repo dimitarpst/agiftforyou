@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notCollectSound = document.getElementById('not-collect-sound');
     const restartGameBtn = document.getElementById('restart-game-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
+    const magnetRangeElement = document.getElementById('magnet-range')
 
     //LET variables
     let score = 0;
@@ -272,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(heartCreationInterval);
         clearInterval(clockCreationInterval);
         clearInterval(shieldCreationInterval);
+        clearInterval(magnetCreationInterval);
         cancelAnimationFrame(animationFrameId);
     
         const hearts = document.querySelectorAll('.falling-heart');
