@@ -295,3 +295,22 @@ a:hover {
         transform: translateY(-170px);
     }
 }
+
+@keyframes fireAnimation {
+    0% { box-shadow: 0 0 10px red, 0 0 20px orange; }
+    50% { box-shadow: 0 0 20px orange, 0 0 30px yellow; }
+    100% { box-shadow: 0 0 10px red, 0 0 20px orange; }
+}
+
+.fire-burn {
+    animation: fireAnimation 1s infinite;
+}
+
+#fire-gif{
+    display: none;
+    height: 35px;
+    z-index: 9;
+    left: 100px;
+    top: 15px;
+    filter: opacity(70%);
+}

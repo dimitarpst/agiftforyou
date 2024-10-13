@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const notCollectSound = document.getElementById('not-collect-sound');
     const restartGameBtn = document.getElementById('restart-game-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
-    const magnetRangeElement = document.getElementById('magnet-range')
+    const magnetRangeElement = document.getElementById('magnet-range');
+
+
 
     //LET variables
     let score = 0;
@@ -30,13 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let pointsPerHeart = 1;
     let isTouchingBasket = false;
     let heartCreationInterval;
+    let heartsCollected = 0;
+    let doublePointsActive = false; 
+    let doublePointsRemaining = 0;
     let clockCreationInterval;
     let shieldActive = false;
     let shieldStacks = 0;
     let timeRemaining = 60;
     let timerInterval;
     let missedHearts = 0;
-    let initialMagnetDuration = 6000;
+    let initialMagnetDuration = 8000;
     let remainingMagnetDuration = 0;
     let magnetActive = false;
     let magnetPaused = false;
@@ -319,9 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.style.display = 'none';
         pauseBtn.style.display = 'inline-block';
         heartCreationInterval = setInterval(createFallingHeart, 2000);
-        clockCreationInterval = setInterval(() => createFallingClock(), Math.random() * 4000 + 7456);
+        clockCreationInterval = setInterval(() => createFallingClock(), Math.random() * 4000 + 6456);
         shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
-        magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 1000 + 4000);
+        magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 1000 + 15000);
         timerInterval = setInterval(() => {
             timeRemaining--;
             updateTimer(timeRemaining);
@@ -358,6 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 missedHearts++;
                 if (!shieldActive || shieldStacks === 0) {
                     showFloatingText('-3 ❤️', player.offsetLeft, player.offsetTop, 'red');
+                    if (doublePointsActive) {
+                        doublePointsActive = false;
+                        console.log("Double points ended due to damage.");
+                    }
                     score -= 3;
                 } else {
                     if (missedHearts % 1 === 0 && shieldStacks > 0) {
@@ -376,15 +385,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             if (checkTopCollision(player, heart)) {
-                showFloatingText('+1 ❤️', player.offsetLeft, player.offsetTop, 'green');
-                score += pointsPerHeart;
+                if (doublePointsActive) {
+                    showFloatingText('+2 ❤️', player.offsetLeft, player.offsetTop, 'green');
+                    score += pointsPerHeart * 2;
+                    doublePointsRemaining--;
+                    if (doublePointsRemaining <= 0) {
+                        doublePointsActive = false;
+                        document.getElementById('score').classList.remove('fire-burn');
+                        document.getElementById('fire-gif').style.display= 'none';
+                    }
+                    
+                } else {
+                    showFloatingText('+1 ❤️', player.offsetLeft, player.offsetTop, 'green');
+                    score += pointsPerHeart;
+                }
+                heartsCollected++;
+                if (heartsCollected % 17 === 0) {
+                    activateDoublePoints();
+                }
                 increaseFallingSpeed();
                 updateScore(score);
                 heart.remove();
                 clearInterval(heartFall);
             }
+            
         }, 20);
     }
+
+    function activateDoublePoints() {
+        doublePointsActive = true;
+        doublePointsRemaining = 5;
+        document.getElementById('score').classList.add('fire-burn');
+        document.getElementById('fire-gif').style.display= 'block';
+        showFloatingText("2X ❤️", player.offsetLeft, player.offsetTop, 'yellow');
+    }
+    
     // <---------------------------------CLOCK-------------------------------------------->
     function createFallingClock() {
         if (isPaused || timeRemaining <= 0) return;
@@ -407,8 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             if (checkTopCollision(player, clock)) {
-                showFloatingText('+5 🕒', player.offsetLeft, player.offsetTop, 'white');
-                timeRemaining += 5;
+                showFloatingText('+7 🕒', player.offsetLeft, player.offsetTop, 'white');
+                timeRemaining += 7;
                 clock.remove();
                 clearInterval(clockFall);
             }
@@ -473,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     // <---------------------------------MAGNET-------------------------------------------->
-    const magnetRangeRadius = 200;
+    const magnetRangeRadius = 250;
 
     function createFallingMagnet() {
         if (isPaused || timeRemaining <= 0) return;
@@ -505,13 +540,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateMagnetEffect() {
         if (magnetActive) {
-            showFloatingText('+6s 🧲', player.offsetLeft, player.offsetTop, 'white');
+            showFloatingText('+8s 🧲', player.offsetLeft, player.offsetTop, 'white');
             remainingMagnetDuration += 6000;
             magnetEndTime = Date.now() + remainingMagnetDuration;
             // console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
         }
-        showFloatingText('+6s 🧲', player.offsetLeft, player.offsetTop, 'white');
+        showFloatingText('+8s 🧲', player.offsetLeft, player.offsetTop, 'white');
         // console.log("Magnet effect activated!");
         magnetActive = true;
         remainingMagnetDuration = initialMagnetDuration;
