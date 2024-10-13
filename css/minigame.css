@@ -232,8 +232,25 @@ a:hover {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-#score, #timer {
-    width: 100px;
+#magnet-timer {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 137px;
+    font-family: 'Pacifico', cursive;
+    font-size: 18px;
+    z-index: 9;
+    background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+    filter:opacity(70%);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#score, #timer, #magnet-timer {
+    width: 113px;
 }
 .falling-clock {
     position: absolute;

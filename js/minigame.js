@@ -242,17 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const heartEmoji = "❤️";
         scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
     }
+
     function togglePause() {
         isPaused = !isPaused;
-        console.log("Paused state:", isPaused);
+        // console.log("Paused state:", isPaused);
         
         if (isPaused) {
-            console.log("Game paused.");
+            // console.log("Game paused.");
             clearInterval(timerInterval);
             pauseMagnetEffect();
             openPauseMenu();
         } else {
-            console.log("Game resumed.");
+            // console.log("Game resumed.");
             timerInterval = setInterval(() => {
                 timeRemaining--;
                 updateTimer(timeRemaining);
@@ -287,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         finalScore.textContent = score;
         gameOverModal.show();
     }
+
     function resetGame() {
         const hearts = document.querySelectorAll('.falling-heart');
         hearts.forEach(heart => heart.remove());
@@ -333,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateTimer(time) {
         const timerDisplay = document.getElementById('timer');
-        timerDisplay.textContent = `🕒 ${time}`;
+        timerDisplay.textContent = `🕒 ${time}s`;
     }
 
     // <---------------------------------HEART-------------------------------------------->
@@ -467,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // <---------------------------------MAGNET-------------------------------------------->
 
-    const magnetRange = 400; // Adjust the range as needed
+    const magnetRangeRadius = 200;
 
     function createFallingMagnet() {
         if (isPaused || timeRemaining <= 0) return;
@@ -499,22 +501,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateMagnetEffect() {
         if (magnetActive) {
-            // If magnet is already active, add 6000 ms to the remaining time
             remainingMagnetDuration += 6000;
             magnetEndTime = Date.now() + remainingMagnetDuration;
-            console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
+            // console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
         }
     
-        console.log("Magnet effect activated!");
+        // console.log("Magnet effect activated!");
         magnetActive = true;
         remainingMagnetDuration = initialMagnetDuration;
         magnetEndTime = Date.now() + remainingMagnetDuration;
     
-        // Log remaining time every second
+        magnetRangeElement.style.display = 'block';
+        magnetRangeElement.classList.add('fade-in');
+        magnetRangeElement.classList.remove('fade-out');
+
+    
         magnetInterval = setInterval(() => {
             if (isPaused) return;
-    
+            updateMagnetRangePosition();
+            const objects = [
+                ...document.querySelectorAll(".falling-heart"),
+                ...document.querySelectorAll(".falling-magnet"),
+                ...document.querySelectorAll(".falling-clock"),
+                ...document.querySelectorAll(".falling-shield"),
+            ];
+            objects.forEach((obj) => {
+                const objRect = obj.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+              
+                const distX = objRect.left - playerRect.left;
+                const distY = objRect.top - playerRect.top;
+                const distance = Math.sqrt(distX * distX + distY * distY);
+              
+                if (distance < magnetRangeRadius) {
+                    const pullStrength = 0.1;
+                    obj.style.left = `${obj.offsetLeft - distX * pullStrength}px`;
+                    obj.style.top = `${obj.offsetTop - distY * pullStrength}px`;
+                }
+            });
             let now = Date.now();
             let remainingTime = magnetEndTime - now;
             remainingMagnetDuration = remainingTime;
@@ -522,11 +547,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (remainingTime <= 0) {
                 clearInterval(magnetInterval);
                 magnetActive = false;
-                console.log("Magnet effect ended.");
+                // console.log("Magnet effect ended.");
+                document.getElementById('magnet-timer').style.display = 'none';
+                document.getElementById('magnet-timer').textContent = '';
+                magnetRangeElement.classList.add('fade-out');
+                setTimeout(() => {
+                    magnetRangeElement.style.display = 'none';
+                }, 500);
             } else {
-                console.log(`Magnet active, time left: ${Math.ceil(remainingTime / 1000)}s`);
+                document.getElementById('magnet-timer').style.display = 'block';
+                document.getElementById('magnet-timer').textContent = `🧲 ${Math.ceil(remainingTime / 1000)}s`;
             }
-        }, 20);
+        }, 10);
+    }
+
+    function updateMagnetRangePosition() {
+        const playerRect = player.getBoundingClientRect();
+        magnetRangeElement.style.width = `${magnetRangeRadius * 2}px`;
+        magnetRangeElement.style.height = `${magnetRangeRadius * 2}px`;
+        magnetRangeElement.style.left = `${playerRect.left + playerRect.width / 2 - magnetRangeRadius}px`;
+        magnetRangeElement.style.top = `${playerRect.top + playerRect.height / 2 - magnetRangeRadius}px`;
     }
 
     function pauseMagnetEffect() {
@@ -536,20 +576,49 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(magnetTimeout);
             clearInterval(magnetInterval);
             magnetActive = false;
-            console.log("Magnet effect paused. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
+            // console.log("Magnet effect paused. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
+            magnetRangeElement.classList.add('fade-out');
+            setTimeout(() => {
+                magnetRangeElement.style.display = 'none';
+            }, 500);
+
         }    
     }
     
     function resumeMagnetEffect() {
         if (magnetPaused && remainingMagnetDuration > 0) {
-            console.log("Resuming magnet effect. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
+            // console.log("Resuming magnet effect. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
             magnetPaused = false;
             magnetActive = true;
             magnetEndTime = Date.now() + remainingMagnetDuration;
+            magnetRangeElement.style.display = 'block';
+            magnetRangeElement.classList.add('fade-in');
+            magnetRangeElement.classList.remove('fade-out');
     
             magnetInterval = setInterval(() => {
                 if (isPaused) return;
     
+                updateMagnetRangePosition();
+                const objects = [
+                    ...document.querySelectorAll(".falling-heart"),
+                    ...document.querySelectorAll(".falling-magnet"),
+                    ...document.querySelectorAll(".falling-clock"),
+                    ...document.querySelectorAll(".falling-shield"),
+                ];
+                objects.forEach((obj) => {
+                    const objRect = obj.getBoundingClientRect();
+                    const playerRect = player.getBoundingClientRect();
+                  
+                    const distX = objRect.left - playerRect.left;
+                    const distY = objRect.top - playerRect.top;
+                    const distance = Math.sqrt(distX * distX + distY * distY);
+                  
+                    if (distance < magnetRangeRadius) {
+                        const pullStrength = 0.1;
+                        obj.style.left = `${obj.offsetLeft - distX * pullStrength}px`;
+                        obj.style.top = `${obj.offsetTop - distY * pullStrength}px`;
+                    }
+                });
                 let now = Date.now();
                 let remainingTime = magnetEndTime - now;
                 remainingMagnetDuration = remainingTime;
@@ -557,17 +626,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (remainingTime <= 0) {
                     clearInterval(magnetInterval);
                     magnetActive = false;
-                    console.log("Magnet effect ended.");
+                    // console.log("Magnet effect ended.");
+                    document.getElementById('magnet-timer').style.display = 'none';
+                    document.getElementById('magnet-timer').textContent = '';
+                    magnetRangeElement.classList.add('fade-out');
+                    setTimeout(() => {
+                        magnetRangeElement.style.display = 'none';
+                    }, 500);
                 } else {
-                    console.log(`Magnet active, time left: ${Math.ceil(remainingTime / 1000)}s`);
+                    document.getElementById('magnet-timer').style.display = 'block';
+                    document.getElementById('magnet-timer').textContent = `🧲 ${Math.ceil(remainingTime / 1000)}s`;
                 }
-            }, 20);
-    
-            magnetTimeout = setTimeout(() => {
-                clearInterval(magnetInterval);
-                magnetActive = false;
-                console.log("Magnet effect ended.");
-            }, remainingMagnetDuration);
+            }, 10);
         }
     }
     
