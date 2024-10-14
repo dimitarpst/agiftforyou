@@ -41,6 +41,16 @@ body {
     text-align: center;
 }
 
+.falling-spikes {
+    position: absolute;
+    top: 0;
+    width: 90px;
+    height: 90px;
+    font-size: 66px;
+    text-align: center;
+    rotate: 45deg;
+}
+
 .falling-magnet {
     position: absolute;
     top: 0;
@@ -313,4 +323,22 @@ a:hover {
     left: 100px;
     top: 15px;
     filter: opacity(70%);
+}
+
+.pulsating-arrow {
+    position: absolute;
+    font-size: 20px;
+    animation: pulseArrow 3s infinite;
+    z-index: 10;
+    rotate: 180deg;
+}
+
+.pulsating-arrow.paused {
+    animation-play-state: paused;
+}
+
+@keyframes pulseArrow {
+    0% { transform: scale(0.1); }
+    90% { transform: scale(2); }
+    100% { filter:hue-rotate(190);}
 }
