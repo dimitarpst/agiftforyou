@@ -214,48 +214,64 @@ document.addEventListener('DOMContentLoaded', () => {
         animationFrameId = requestAnimationFrame(updatePlayerPosition);
     }
 
-    gameArea.addEventListener('touchstart', handleTouchStart);
-    gameArea.addEventListener('touchmove', handleTouchMove);
-    gameArea.addEventListener('touchend', handleTouchEnd);
+    let activeTouches = {}; // To store all active touches
 
-    let touchStartX = 0;
-
-    function handleTouchStart(event) {
-        const touchX = event.touches[0].clientX;
-        const touchY = event.touches[0].clientY;
-        const playerRect = player.getBoundingClientRect();
-    
-        if (
-            touchX >= playerRect.left &&
-            touchX <= playerRect.right &&
-            touchY >= playerRect.top &&
-            touchY <= playerRect.bottom
-        ) {
-            isTouchingBasket = true;
-            touchStartX = touchX;
-        }
-    }
-
-    function handleTouchMove(event) {
-        if (!isPaused && score >= 0 && isTouchingBasket) {
-            const touchX = event.touches[0].clientX;
-            const deltaX = touchX - touchStartX;
-            let playerLeft = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
-            let newPlayerLeft = playerLeft + deltaX;
-    
-            if (newPlayerLeft < 0) {
-                newPlayerLeft = 0;
-            } else if (newPlayerLeft > gameArea.offsetWidth - player.offsetWidth) {
-                newPlayerLeft = gameArea.offsetWidth - player.offsetWidth;
+    // Handle touch start
+    gameArea.addEventListener('touchstart', (event) => {
+        Array.from(event.touches).forEach((touch) => {
+            // Check if touch is within the player bounds for movement
+            const playerRect = player.getBoundingClientRect();
+            if (
+                touch.clientX >= playerRect.left &&
+                touch.clientX <= playerRect.right &&
+                touch.clientY >= playerRect.top &&
+                touch.clientY <= playerRect.bottom
+            ) {
+                activeTouches[touch.identifier] = 'move';
+                touchStartX = touch.clientX; // Track starting point for movement
             }
-            player.style.left = `${newPlayerLeft}px`;
-            touchStartX = touchX;
-        }
-    }
-
-    function handleTouchEnd() {
-        isTouchingBasket = false;
-    }
+            // Check if touch is within the pause button bounds
+            const pauseButtonRect = pauseBtn.getBoundingClientRect();
+            if (
+                touch.clientX >= pauseButtonRect.left &&
+                touch.clientX <= pauseButtonRect.right &&
+                touch.clientY >= pauseButtonRect.top &&
+                touch.clientY <= pauseButtonRect.bottom
+            ) {
+                activeTouches[touch.identifier] = 'pause';
+                togglePause(); // Open pause menu or inventory, halting movement
+                // Clear all movement-related touches since pause takes priority
+                activeTouches = Object.fromEntries(
+                    Object.entries(activeTouches).filter(([id, type]) => type !== 'move')
+                );
+            }
+        });
+    });
+    
+    // Handle touch move
+    gameArea.addEventListener('touchmove', (event) => {
+        Array.from(event.touches).forEach((touch) => {
+            if (activeTouches[touch.identifier] === 'move' && !isPaused) {
+                // Only update position if it's a movement touch and the game is not paused
+                const deltaX = touch.clientX - touchStartX;
+                let playerLeft = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
+                let newPlayerLeft = playerLeft + deltaX;
+    
+                // Boundary checks
+                newPlayerLeft = Math.max(0, Math.min(newPlayerLeft, gameArea.offsetWidth - player.offsetWidth));
+                player.style.left = `${newPlayerLeft}px`;
+                touchStartX = touch.clientX; // Update touch start position for smooth movement
+            }
+        });
+    });
+    
+    // Handle touch end
+    gameArea.addEventListener('touchend', (event) => {
+        Array.from(event.changedTouches).forEach((touch) => {
+            delete activeTouches[touch.identifier];
+        });
+    });
+    
 
     document.addEventListener('keydown', (e) => {
         keys[e.key] = true;
