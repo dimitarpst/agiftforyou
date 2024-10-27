@@ -53,23 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let cloudPaused = false;
 
 
-    // Function to check orientation and toggle the overlay
-function checkOrientation() {
-    if (window.matchMedia("(orientation: portrait)").matches) {
-        // Show overlay if in portrait mode
-        document.getElementById('rotate-overlay').style.display = 'flex';
-    } else {
-        // Hide overlay if in landscape mode
-        document.getElementById('rotate-overlay').style.display = 'none';
+    // <---------------------------------Orientation check-------------------------------------------->
+
+    function checkOrientation() {
+        if (window.matchMedia("(orientation: portrait)").matches) {
+            document.getElementById('rotate-overlay').style.display = 'flex';
+        } else {
+            document.getElementById('rotate-overlay').style.display = 'none';
+        }
     }
-}
 
-// Initial check
-checkOrientation();
+    checkOrientation();
 
-// Listen for orientation changes
-window.addEventListener('orientationchange', checkOrientation);
-window.addEventListener('resize', checkOrientation); // For cases where orientation change is not triggered
+    window.addEventListener('orientationchange', checkOrientation);
+    window.addEventListener('resize', checkOrientation); 
 
 
 
