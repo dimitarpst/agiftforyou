@@ -214,13 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
         animationFrameId = requestAnimationFrame(updatePlayerPosition);
     }
 
-    let activeTouches = {}; // To store all active touches
-    let touchOffsetX = 0; // To store the initial touch offset from the player (basket)
-    
-    // Handle touch start
+    let activeTouches = {}; 
+    let touchOffsetX = 0;
+     
     gameArea.addEventListener('touchstart', (event) => {
         Array.from(event.touches).forEach((touch) => {
-            // Check if touch is within the player bounds for movement
             const playerRect = player.getBoundingClientRect();
             if (
                 touch.clientX >= playerRect.left &&
@@ -229,10 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 touch.clientY <= playerRect.bottom
             ) {
                 activeTouches[touch.identifier] = 'move';
-                // Calculate offset between touch point and player position
                 touchOffsetX = touch.clientX - playerRect.left;
             }
-            // Check if touch is within the pause button bounds
             const pauseButtonRect = pauseBtn.getBoundingClientRect();
             if (
                 touch.clientX >= pauseButtonRect.left &&
@@ -241,8 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 touch.clientY <= pauseButtonRect.bottom
             ) {
                 activeTouches[touch.identifier] = 'pause';
-                togglePause(); // Open pause menu or inventory, halting movement
-                // Clear all movement-related touches since pause takes priority
+                togglePause(); 
                 activeTouches = Object.fromEntries(
                     Object.entries(activeTouches).filter(([id, type]) => type !== 'move')
                 );
@@ -250,21 +245,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Handle touch move
     gameArea.addEventListener('touchmove', (event) => {
         Array.from(event.touches).forEach((touch) => {
             if (activeTouches[touch.identifier] === 'move' && !isPaused) {
-                // Calculate the new player position based on the initial offset
                 let newPlayerLeft = touch.clientX - touchOffsetX;
     
-                // Boundary checks
                 newPlayerLeft = Math.max(0, Math.min(newPlayerLeft, gameArea.offsetWidth - player.offsetWidth));
                 player.style.left = `${newPlayerLeft}px`;
             }
         });
     });
-    
-    // Handle touch end
+
     gameArea.addEventListener('touchend', (event) => {
         Array.from(event.changedTouches).forEach((touch) => {
             delete activeTouches[touch.identifier];
