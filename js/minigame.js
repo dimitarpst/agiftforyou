@@ -53,6 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let cloudPaused = false;
 
 
+    // Function to check orientation and toggle the overlay
+function checkOrientation() {
+    if (window.matchMedia("(orientation: portrait)").matches) {
+        // Show overlay if in portrait mode
+        document.getElementById('rotate-overlay').style.display = 'flex';
+    } else {
+        // Hide overlay if in landscape mode
+        document.getElementById('rotate-overlay').style.display = 'none';
+    }
+}
+
+// Initial check
+checkOrientation();
+
+// Listen for orientation changes
+window.addEventListener('orientationchange', checkOrientation);
+window.addEventListener('resize', checkOrientation); // For cases where orientation change is not triggered
+
+
+
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
 
     document.getElementById('fullscreen-btn').addEventListener('click', () => {
@@ -216,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let activeTouches = {}; 
     let touchOffsetX = 0;
-     
+
     gameArea.addEventListener('touchstart', (event) => {
         Array.from(event.touches).forEach((touch) => {
             const playerRect = player.getBoundingClientRect();
