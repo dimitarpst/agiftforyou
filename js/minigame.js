@@ -215,7 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let activeTouches = {}; // To store all active touches
-
+    let touchOffsetX = 0; // To store the initial touch offset from the player (basket)
+    
     // Handle touch start
     gameArea.addEventListener('touchstart', (event) => {
         Array.from(event.touches).forEach((touch) => {
@@ -228,7 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 touch.clientY <= playerRect.bottom
             ) {
                 activeTouches[touch.identifier] = 'move';
-                touchStartX = touch.clientX; // Track starting point for movement
+                // Calculate offset between touch point and player position
+                touchOffsetX = touch.clientX - playerRect.left;
             }
             // Check if touch is within the pause button bounds
             const pauseButtonRect = pauseBtn.getBoundingClientRect();
@@ -252,15 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
     gameArea.addEventListener('touchmove', (event) => {
         Array.from(event.touches).forEach((touch) => {
             if (activeTouches[touch.identifier] === 'move' && !isPaused) {
-                // Only update position if it's a movement touch and the game is not paused
-                const deltaX = touch.clientX - touchStartX;
-                let playerLeft = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
-                let newPlayerLeft = playerLeft + deltaX;
+                // Calculate the new player position based on the initial offset
+                let newPlayerLeft = touch.clientX - touchOffsetX;
     
                 // Boundary checks
                 newPlayerLeft = Math.max(0, Math.min(newPlayerLeft, gameArea.offsetWidth - player.offsetWidth));
                 player.style.left = `${newPlayerLeft}px`;
-                touchStartX = touch.clientX; // Update touch start position for smooth movement
             }
         });
     });
@@ -382,8 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.textContent = 'Pause';
     
         startGame();
-    }
-    
+    }  
 
     function startGame() {
         score = 0;
