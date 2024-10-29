@@ -147,7 +147,15 @@ a:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#game-overlay {
     z-index: 10;
+}
+
+#countdown-overlay {
+    z-index: 15;
+    display: none;  
 }
 
 .overlay-content {

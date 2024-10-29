@@ -5,7 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('score');
     const startBtn = document.getElementById('start-btn');
     const pauseBtn = document.getElementById('pause-btn');
-    const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+    const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'), {
+        backdrop: 'static',
+        keyboard: false
+    });
     const pauseMenuModal = new bootstrap.Modal(document.getElementById('pauseMenuModal'));
     const playAgainBtn = document.getElementById('play-again-btn');
     const goBackBtn = document.getElementById('go-back-btn');
@@ -51,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let cloudRemainingTime = 0;
     let cloudStartTime;
     let cloudPaused = false;
+    let spikeFall;
+
 
 
     // <---------------------------------Orientation check-------------------------------------------->
@@ -116,10 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameArea.appendChild(bottomLine);
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
-    resumeGameBtn.addEventListener('click', () => {
-        pauseMenuModal.hide();
-        togglePause();
-    });
     playAgainBtn.addEventListener('click', () => {
         resetGame();
         gameOverModal.hide();
@@ -290,6 +291,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------GAME START/STOP STUFF-------------------------------------------->
 
+    function startCountdownAndResume() {
+        const countdownOverlay = document.getElementById('countdown-overlay');
+        const countdownNumber = document.getElementById('countdown-number');
+        let countdown = 3;
+    
+        countdownOverlay.style.display = 'flex';
+        countdownNumber.textContent = countdown;
+    
+        const countdownInterval = setInterval(() => {
+            countdown -= 1;
+    
+            if (countdown > 0) {
+                countdownNumber.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                countdownOverlay.style.display = 'none';
+                setTimeout(() => {
+                    resumeGame();  
+                }, 200);  
+            }
+        }, 1000); 
+    }
+
     function updateScore(newScore) {
         const heartEmoji = "❤️";
         scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
@@ -297,33 +321,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function togglePause() {
         isPaused = !isPaused;
-        // console.log("Paused state:", isPaused);
-        
+
         if (isPaused) {
-            // console.log("Game paused.");
             clearInterval(timerInterval);
             pauseMagnetEffect();
             pauseCloudOverlay();
             openPauseMenu();
-
-        } else {
-            // console.log("Game resumed.");
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                updateTimer(timeRemaining);
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    showGameOverModal();
-                }
-            }, 1000);
-    
-            resumeMagnetEffect();
-            resumeCloudOverlay();
-
         }
-    
-        pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
     }
+
+    function resumeGame() {
+        isPaused = false;  
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateTimer(timeRemaining);
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                showGameOverModal();
+            }
+        }, 1000);
+        resumeMagnetEffect();
+        resumeCloudOverlay();
+    }
+    
+
+    document.getElementById('pauseMenuModal').addEventListener('hidden.bs.modal', () => {
+        if (isPaused) {
+            startCountdownAndResume(); 
+        }
+    });
+    
 
     function showGameOverModal() {
         clearTimeout(cloudTimeout);
@@ -332,15 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(clockCreationInterval);
         clearInterval(shieldCreationInterval);
         clearInterval(magnetCreationInterval);
+        clearInterval(spikeCreationInterval);
+        if (spikeFall) clearInterval(spikeFall); 
         cancelAnimationFrame(animationFrameId);
         endGame();
-        const hearts = document.querySelectorAll('.falling-heart');
-        const clocks = document.querySelectorAll('.falling-clock');
-        const shields = document.querySelectorAll('.falling-shield');
-        
-        hearts.forEach(heart => heart.remove());
-        clocks.forEach(clock => clock.remove());
-        shields.forEach(shield => shield.remove());
+
+        document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes').forEach(item => item.remove());
     
         finalScore.textContent = score;
         gameOverModal.show();
@@ -353,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(shieldCreationInterval);
         clearInterval(magnetCreationInterval);
         clearInterval(spikeCreationInterval);
-        clearInterval(spikeFall);
+        if (spikeFall) clearInterval(spikeFall);
     
         document.querySelectorAll('.falling-heart').forEach(heart => heart.remove());
         document.querySelectorAll('.falling-clock').forEach(clock => clock.remove());

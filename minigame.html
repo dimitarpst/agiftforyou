@@ -25,6 +25,10 @@
         <img src="pictures/rotate-phone.gif" alt="Rotate Phone">
     </div>
 
+    <div id="countdown-overlay" class="overlay text-white align-items-center justify-content-center"
+    style="display: none; font-size: 100px; font-family: 'Pacifico', cursive; background-color: rgba(0, 0, 0, 0.5);">
+       <span id="countdown-number"></span>
+   </div>
 
     <div id="game-area" class="overflow-hidden">
         <div id="floating-indicators"></div>
@@ -48,7 +52,6 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="gameOverModalLabel" style="font-family: 'Pacifico', cursive;">Game Over!
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
                     <p style="font-family: 'Caveat', cursive; font-size: 25px; color: #ff6f91;">Your Score: <span
@@ -82,8 +85,6 @@
                             id="sensitivity-value">7</span></p>
                     <input type="range" id="sensitivity-slider" min="1" max="30" step="1" value="7">
                     <br>
-                    <button id="resume-game-btn" class="btn btn-primary"
-                        style="background-color: #ff6f91; border: none;">Resume</button>
                     <button id="restart-game-btn" class="btn btn-secondary"
                         style="background-color: #ff9aa2; border: none;">Restart</button>
                     <button id="exit-game-btn" class="btn btn-danger"
