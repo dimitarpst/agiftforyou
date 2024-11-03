@@ -110,8 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const playGameBtn = document.getElementById('play-game-btn');
     playGameBtn.addEventListener('click', () => {
         gameOverlay.style.display = 'none';
+        
+        if (!document.fullscreenElement) {
+            const gameArea = document.documentElement;
+            if (gameArea.requestFullscreen) {
+                gameArea.requestFullscreen();
+            } else if (gameArea.mozRequestFullScreen) {
+                gameArea.mozRequestFullScreen();
+            } else if (gameArea.webkitRequestFullscreen) { 
+                gameArea.webkitRequestFullscreen();
+            } else if (gameArea.msRequestFullscreen) { 
+                gameArea.msRequestFullscreen();
+            }
+        }
+    
         startGame();
     });
+    
     bottomLine.style.position = 'absolute';
     bottomLine.style.height = '4px';
     bottomLine.style.width = '100%';
