@@ -43,6 +43,7 @@
         <div id="magnet-timer" class="text-white"></div>
         <button id="start-btn"></button>
         <button id="pause-btn">Pause</button>
+        <button id="inventory-btn">Inventory</button>
     </div>
 
     <div class="modal fade overflow-hidden" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel"
@@ -95,6 +96,49 @@
         </div>
     </div>
 
+    <div class="modal fade overflow-hidden" id="inventoryModal" tabindex="-1" aria-labelledby="inventoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #ffe4e6; border-radius: 20px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inventoryModalLabel" style="font-family: 'Pacifico', cursive;">Inventory</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <!-- Animation Section -->
+                    <div id="animation-section">
+                        <div id="star-section">
+                            <span>🌟</span>
+                            <span id="star-count">0</span>
+                        </div>
+                        <button id="wish-button" class="btn btn-primary">Wish</button>
+
+                    </div>
+                    
+                <div id="items-section" class="d-flex justify-content-around">
+                    <div id="hearts-item" class="inventory-item">
+                        <img src="pictures/heartWish.png" class="item-icon" alt="Hearts Power-Up">
+                        <span id="hearts-count" class="item-count">0</span>
+                    </div>
+                    <div id="timer-item" class="inventory-item">
+                        <img src="pictures/clockWish.png" class="item-icon" alt="Timer Power-Up">
+                        <span id="timer-count" class="item-count">0</span>
+                    </div>
+                    <div id="shield-item" class="inventory-item">
+                        <img src="pictures/shieldWish.png" class="item-icon" alt="Shield Power-Up">
+                        <span id="shield-count" class="item-count">0</span>
+                    </div>
+                    <div id="magnet-item" class="inventory-item">
+                        <img src="pictures/magnetWish.png" class="item-icon" alt="Magnet Power-Up">
+                        <span id="magnet-count" class="item-count">0</span>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
     <div class="modal fade overflow-hidden" id="winModal" tabindex="-1" aria-labelledby="winModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -112,6 +156,8 @@
             </div>
         </div>
     </div>
+
+
     <audio id="clockCollect" src="audio/clockCollect.wav" preload="auto"></audio>
     <audio id="clockCollectMagnet" src="audio/clockCollectMagnet.wav" preload="auto"></audio>
     <audio id="heartCollect" src="audio/heartCollect.wav" preload="auto"></audio>

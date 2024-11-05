@@ -64,6 +64,7 @@ body {
 
 
 #score, #timer {
+    display: none;
     position: absolute;
     top: 10px;
     font-family: 'Pacifico', cursive;
@@ -73,6 +74,7 @@ body {
 }
 
 #start-btn, #pause-btn{
+    display: none;
     position: absolute;
     top: 10px;
     right: 20px;
@@ -95,10 +97,6 @@ body {
 
 #start-btn:focus-visible, #pause-btn:focus-visible{
     outline: none !important;
-}
-
-#pause-btn {
-    display: none;
 }
 
 .modal-content {
@@ -394,4 +392,98 @@ a:hover {
 #rotate-overlay img {
     width: 80%;
     max-width: 400px;
+}
+
+#inventory-btn {
+    display: none;
+    position: absolute;
+    top: 70px;  
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-family: 'Nerko One', cursive;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 9;
+    background: linear-gradient(45deg, #ff9aa2, #ff6f91);
+    filter: opacity(70%);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#inventory-btn:focus-visible {
+    outline: none !important;
+}
+
+#animation-section {
+    height: 150px;
+    background-color: #fce4ec;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Pacifico', cursive;
+    font-size: 30px;
+    color: #ff6f91;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#items-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 2px solid #ff6f91;
+}
+
+.inventory-item {
+    width: 70px;
+    height: 70px;
+    background-color: #fff0f3;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.item-icon {
+    width: 55px;
+    height: 55px;
+}
+
+.item-count {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: 5px;
+    right: 5px;
+    background-color: #ff6f91;
+    color: white;
+    font-size: 12px;
+    font-family: 'Caveat', cursive;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.falling-star {
+    position: absolute;
+    top: 0;
+    font-size: 30px;
+    text-align: center;
+    animation: trailEffect 1s infinite linear;
+}
+
+@keyframes trailEffect {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 223, 0, 0.8), 0 0 10px rgba(255, 223, 0, 0.6), 0 0 15px rgba(255, 223, 0, 0.4);
+    }
+    100% {
+        text-shadow: 0 0 20px rgba(255, 223, 0, 0);
+    }
 }
