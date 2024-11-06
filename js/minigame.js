@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let cloudPaused = false;
     let spikeFall;
     let currentPowerUp = null;
-    let shieldTimer;
     let shieldCreationInterval, 
     magnetCreationInterval, 
     heartCreationInterval, 
@@ -68,9 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let doubleHeartBoostActive = false;
     let tripleHeartBoostActive = false;
     let doubleHeartBoostRemaining = 0;
-    let tripleHeartBoostRemaining = 0; 
-    
-
+    let tripleHeartBoostRemaining = 0;
 
 
     // <---------------------------------Orientation check-------------------------------------------->
@@ -230,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function increaseFallingSpeed() {
         const baseSpeed = 2;
         const maxSpeed = 10;
-        const accelerationFactor = 0.035;
+        const accelerationFactor = 0.020;
     
         fallingSpeed = baseSpeed + (1 - Math.exp(-accelerationFactor * score)) * (maxSpeed - baseSpeed);
         fallingSpeed = Math.min(fallingSpeed, maxSpeed);
@@ -361,7 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resumeGame() {
-        isPaused = false;  
+        isPaused = false;
+
         timerInterval = setInterval(() => {
             timeRemaining--;
             updateTimer(timeRemaining);
@@ -416,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.falling-magnet').forEach(magnet => magnet.remove());
         document.querySelectorAll('.falling-spikes').forEach(spike => spike.remove());
         document.querySelectorAll('.pulsating-arrow').forEach(arrow => arrow.remove());
+        document.querySelectorAll('.falling-star').forEach(arrow => arrow.remove());
     
         score = 0;
         updateScore(score);
@@ -439,6 +438,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         fallingSpeed = 2;
     
+        if (doubleHeartBoostActive) deactivateDoubleHeartBoost();
+        if (tripleHeartBoostActive) deactivateTripleHeartBoost();
+
         startBtn.style.display = 'none';
         pauseBtn.style.display = 'inline-block';
         pauseBtn.textContent = 'Pause';
@@ -501,6 +503,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 heart.remove();
                 clearInterval(heartFall);
                 missedHearts++;
+                if (doubleHeartBoostActive) deactivateDoubleHeartBoost();
+                if (tripleHeartBoostActive) deactivateTripleHeartBoost();
                 if (!shieldActive || shieldStacks === 0) {
                     showFloatingText('-3 ❤️', player.offsetLeft, player.offsetTop, 'red');
                     score -= 3;
@@ -626,6 +630,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
+    function activateClockBoost() {
+        timeRemaining += 20;
+        showFloatingText('+20s 🕒', player.offsetLeft, player.offsetTop, 'yellow');
+        document.getElementById('timer').textContent = `🕒 ${timeRemaining}s`;
+    }
+    
     
     // <---------------------------------SHIELD-------------------------------------------->
 
@@ -657,7 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
-
     function activateShieldPower() {
         const playerElement = document.getElementById('player');
         if (shieldStacks < 3) {
@@ -668,7 +677,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         shieldActive = true;
     }
-
     function updateShieldVisual() {
         const shieldOverlay = document.getElementById('shield-overlay');
         if (!shieldOverlay) {
@@ -687,48 +695,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             shieldOverlay.style.display = 'none';
         }
+        if (doubleHeartBoostActive) deactivateDoubleHeartBoost();
+        if (tripleHeartBoostActive) deactivateTripleHeartBoost();
     }
 
     
-     // <---------------------------------Infinite Shield-------------------------------------------->
-
-
-        function activateInfiniteShield() {
-            shieldActive = true;
-            showFloatingText('Infinite Shield Activated 🛡️', player.offsetLeft, player.offsetTop, 'blue');
-            document.getElementById('shield-overlay').src = './pictures/shieldWish.png';
-            disableItemDrops(['shield', 'magnet']); 
-        
-            shieldTimer = setTimeout(() => deactivateInfiniteShield(), 8000); 
-        }
-        
-        function deactivateInfiniteShield() {
-            shieldActive = false;
-            enableItemDrops(['shield', 'magnet']); // Re-enable drops
-            document.getElementById('shield-overlay').style.display = 'none';
-            clearTimeout(shieldTimer);
-        }
-
-        function disableItemDrops(items) {
-            if (items.includes('shield') && shieldCreationInterval) {
-                clearInterval(shieldCreationInterval);
-                shieldCreationInterval = null;
-            }
-            if (items.includes('magnet') && magnetCreationInterval) {
-                clearInterval(magnetCreationInterval);
-                magnetCreationInterval = null;
-            }
-        }
-        
-        function enableItemDrops(items) {
-            if (items.includes('shield') && !shieldCreationInterval) {
-                shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
-            }
-            if (items.includes('magnet') && !magnetCreationInterval) {
-                magnetCreationInterval = setInterval(() => createFallingMagnet(), Math.random() * 1000 + 15000);
-            }
-        }
-        
     // <---------------------------------MAGNET-------------------------------------------->
 
     const magnetRangeRadius = 250;
@@ -1075,138 +1046,136 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     }
 
-        // <---------------------------------INVENTORY-------------------------------------------->
+    // <---------------------------------INVENTORY-------------------------------------------->
 
-        inventoryBtn.addEventListener('click', () => {
-            togglePause('inventory');
-            inventoryModal.show();
+    inventoryBtn.addEventListener('click', () => {
+        togglePause('inventory');
+        inventoryModal.show();
+    });
+
+    document.getElementById('inventoryModal').addEventListener('hidden.bs.modal', () => {
+        if (isPaused) {
+            startCountdownAndResume();
+        }
+    }); 
+
+    // <---------------------------------Wishing-------------------------------------------->
+
+    function createFallingStar() {
+        if (isPaused || timeRemaining <= 0) return;
+    
+        const star = document.createElement('div');
+        star.classList.add('falling-star');
+        star.innerHTML = '🌟';
+        star.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+        gameArea.appendChild(star);
+    
+        let starFall = setInterval(() => {
+            if (isPaused) return;
+    
+            let starTop = parseInt(window.getComputedStyle(star).getPropertyValue('top'));
+            if (starTop > gameArea.offsetHeight - 40) {
+                star.remove();
+                clearInterval(starFall);
+            } else {
+                star.style.top = `${starTop + fallingSpeed}px`;
+            }
+    
+            if (checkTopCollision(player, star)) {
+                showFloatingText('+1 🌟', player.offsetLeft, player.offsetTop, 'yellow');
+                incrementStarCount();
+                star.remove();
+                clearInterval(starFall);
+            }
+        }, 20);
+    }
+
+    function incrementStarCount() {
+        starCount++;
+        document.getElementById('star-count').textContent = starCount;
+    }
+
+    wishButton.addEventListener('click', wishForItem);
+
+    function wishForItem() {
+        if (starCount <= 0) {
+            alert("You don't have enough stars to wish!");
+            return;
+        }
+
+        starCount--;
+        document.getElementById('star-count').textContent = starCount;
+
+        const items = ['hearts', 'timer', 'shield', 'magnet'];
+        const selectedItem = items[Math.floor(Math.random() * items.length)];
+
+        const itemCountElement = document.getElementById(`${selectedItem}-count`);
+        itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
+
+        alert(`You received a ${selectedItem.replace(/^./, selectedItem[0].toUpperCase())} Power-Up!`);
+    }
+
+    document.querySelectorAll('.inventory-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const itemId = item.id.split('-')[0]; 
+
+            const itemCountElement = document.getElementById(`${itemId}-count`);
+            let itemCount = parseInt(itemCountElement.textContent);
+
+            if (itemCount > 0) {
+                itemCount--;
+                itemCountElement.textContent = itemCount;
+
+                activatePowerUp(itemId);
+                alert(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
+            } else {
+                alert("You don't have any of this item to use!");
+            }
         });
-    
-        document.getElementById('inventoryModal').addEventListener('hidden.bs.modal', () => {
-            if (isPaused) {
-                startCountdownAndResume();
-            }
-        }); 
+    });
 
-        // <---------------------------------Wishing-------------------------------------------->
+    // <---------------------------------PowerUps-------------------------------------------->
 
-        function createFallingStar() {
-            if (isPaused || timeRemaining <= 0) return;
-        
-            const star = document.createElement('div');
-            star.classList.add('falling-star');
-            star.innerHTML = '🌟';
-            star.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
-            gameArea.appendChild(star);
-        
-            let starFall = setInterval(() => {
-                if (isPaused) return;
-        
-                let starTop = parseInt(window.getComputedStyle(star).getPropertyValue('top'));
-                if (starTop > gameArea.offsetHeight - 40) {
-                    star.remove();
-                    clearInterval(starFall);
-                } else {
-                    star.style.top = `${starTop + fallingSpeed}px`;
-                }
-        
-                if (checkTopCollision(player, star)) {
-                    showFloatingText('+1 🌟', player.offsetLeft, player.offsetTop, 'yellow');
-                    incrementStarCount();
-                    star.remove();
-                    clearInterval(starFall);
-                }
-            }, 20);
+
+    function activatePowerUp(itemId) {
+        if (currentPowerUp) {
+            deactivatePowerUp();
         }
     
-        function incrementStarCount() {
-            starCount++;
-            document.getElementById('star-count').textContent = starCount;
+        currentPowerUp = itemId;
+    
+        switch (itemId) {
+            case 'hearts':
+                activateTripleHeartBoost();
+                break;
+            case 'timer':
+                activateClockBoost();
+                break;
+            case 'shield':
+                activateInfiniteShield();
+                break;
+            case 'magnet':
+                activateExtendedMagnet();
+                break;
         }
-
-        wishButton.addEventListener('click', wishForItem);
+    }
     
-        function wishForItem() {
-            if (starCount <= 0) {
-                alert("You don't have enough stars to wish!");
-                return;
-            }
+    function deactivatePowerUp() {
+        if (!currentPowerUp) return;
     
-            starCount--;
-            document.getElementById('star-count').textContent = starCount;
-    
-            const items = ['hearts', 'timer', 'shield', 'magnet'];
-            const selectedItem = items[Math.floor(Math.random() * items.length)];
-    
-            const itemCountElement = document.getElementById(`${selectedItem}-count`);
-            itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
-    
-            alert(`You received a ${selectedItem.replace(/^./, selectedItem[0].toUpperCase())} Power-Up!`);
+        switch (currentPowerUp) {
+            case 'hearts':
+                deactivateTripleHeartBoost();
+                break;
+            case 'shield':
+                deactivateInfiniteShield();
+                break;
+            case 'magnet':
+                deactivateExtendedMagnet();
+                break;
         }
-    
-        document.querySelectorAll('.inventory-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const itemId = item.id.split('-')[0]; 
-
-                const itemCountElement = document.getElementById(`${itemId}-count`);
-                let itemCount = parseInt(itemCountElement.textContent);
-
-                if (itemCount > 0) {
-                    itemCount--;
-                    itemCountElement.textContent = itemCount;
-
-                    activatePowerUp(itemId);
-                    alert(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
-                } else {
-                    alert("You don't have any of this item to use!");
-                }
-            });
-        });
-
-        // <---------------------------------PowerUps-------------------------------------------->
-
-
-        function activatePowerUp(itemId) {
-            if (currentPowerUp) {
-                deactivatePowerUp();
-            }
-        
-            currentPowerUp = itemId;
-        
-            switch (itemId) {
-                case 'hearts':
-                    activateTripleHeartBoost();
-                    break;
-                case 'timer':
-                    timeRemaining += 20;
-                    showFloatingText('+20s 🕒', player.offsetLeft, player.offsetTop, 'yellow');
-                    deactivatePowerUp(); 
-                    break;
-                case 'shield':
-                    activateInfiniteShield();
-                    break;
-                case 'magnet':
-                    activateExtendedMagnet();
-                    break;
-            }
-        }
-        
-        function deactivatePowerUp() {
-            if (!currentPowerUp) return;
-        
-            switch (currentPowerUp) {
-                case 'hearts':
-                    deactivateTripleHeartBoost();
-                    break;
-                case 'shield':
-                    deactivateInfiniteShield();
-                    break;
-                case 'magnet':
-                    deactivateExtendedMagnet();
-                    break;
-            }
-            currentPowerUp = null;
-        }
+        currentPowerUp = null;
+    }
 
 
     // <---------------------------------HIGH SCORES-------------------------------------------->
