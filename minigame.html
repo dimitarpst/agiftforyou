@@ -61,11 +61,28 @@
                         style="background-color: #ff6f91; border: none;">Play Again</button>
                     <button id="go-back-btn" class="btn btn-secondary"
                         style="background-color: #ff9aa2; border: none;">Go Back</button>
+                    <button id="view-all-scores-btn" class="btn btn-primary" style="background-color: #ff6f91; border: none;">View All Scores</button>
+
                 </div>
             </div>
         </div>
     </div>
 
+
+    <div id="allScoresModal" class="modal fade" tabindex="-1" aria-labelledby="allScoresModalLabel" aria-hidden="true" style="z-index: 1056;"> 
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allScoresModalLabel">All Scores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="all-scores">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     <div class="modal fade overflow-hidden" id="pauseMenuModal" tabindex="-1" aria-labelledby="pauseMenuModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -91,6 +108,8 @@
                     <button id="exit-game-btn" class="btn btn-danger"
                         style="background-color: #ff6f91; border: none;">Exit</button>
                     <button id="fullscreen-btn" class="btn btn-warning text-white" style="background-color: #ff6f91; border: none;">Fullscreen</button>
+                    <button id="view-all-scores-btn-pause" class="btn btn-primary" style="background-color: #ff6f91; border: none;">View All Scores</button>
+
                 </div>
             </div>
         </div>
@@ -122,13 +141,13 @@
                         <img src="pictures/clockWish.png" class="item-icon" alt="Timer Power-Up">
                         <span id="timer-count" class="item-count">0</span>
                     </div>
-                    <div id="shield-item" class="inventory-item">
-                        <img src="pictures/shieldWish.png" class="item-icon" alt="Shield Power-Up">
-                        <span id="shield-count" class="item-count">0</span>
+                    <div id="???-item" class="inventory-item">
+                        <img src="pictures/???Wish.png" class="item-icon" alt="??? Power-Up">
+                        <span id="???-count" class="item-count">0</span>
                     </div>
-                    <div id="magnet-item" class="inventory-item">
-                        <img src="pictures/magnetWish.png" class="item-icon" alt="Magnet Power-Up">
-                        <span id="magnet-count" class="item-count">0</span>
+                    <div id="???-item" class="inventory-item">
+                        <img src="pictures/???Wish.png" class="item-icon" alt="??? Power-Up">
+                        <span id="???-count" class="item-count">0</span>
                     </div>
                 </div>
 
@@ -136,25 +155,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade overflow-hidden" id="winModal" tabindex="-1" aria-labelledby="winModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background-color: #ffe4e6;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="winModalLabel">GOOD JOB BABYYYYYYY</h5>
-                </div>
-                <div class="modal-body text-center">
-                    <p>YOU WONNNNNNNNNNNNNNNNNNNNNNNNNNNN!!!!!!!!!!!!</p>
-                    <button id="play-again-btn-win" class="btn btn-primary"
-                        style="background-color: #ff6f91; border: none;">Play Again</button>
-                    <button id="go-back-btn-win" class="btn btn-secondary"
-                        style="background-color: #ff6f91; border: none;">Go Back to Home</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <audio id="clockCollect" src="audio/clockCollect.wav" preload="auto"></audio>
     <audio id="clockCollectMagnet" src="audio/clockCollectMagnet.wav" preload="auto"></audio>

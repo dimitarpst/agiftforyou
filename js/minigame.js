@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let heartsCollected = 0;
     let shieldActive = false;
     let shieldStacks = 0;
-    let timeRemaining = 60;
+    let timeRemaining = 20;
     let timerInterval;
     let missedHearts = 0;
     let initialMagnetDuration = 8000;
@@ -187,15 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    document.getElementById('play-again-btn-win').addEventListener('click', () => {
-        resetGame();
-        const winModal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
-        winModal.hide();
-    });
 
-    document.getElementById('go-back-btn-win').addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
 
     const sensitivitySlider = document.getElementById('sensitivity-slider');
     const sensitivityValue = document.getElementById('sensitivity-value');
@@ -377,7 +369,18 @@ document.addEventListener('DOMContentLoaded', () => {
             startCountdownAndResume(); 
         }
     });
-    
+
+    document.getElementById('view-all-scores-btn').addEventListener('click', () => {
+        displayBestScores();
+        const allScoresModal = new bootstrap.Modal(document.getElementById('allScoresModal'));
+        allScoresModal.show();
+    });
+
+    document.getElementById('view-all-scores-btn-pause').addEventListener('click', () => {
+        displayBestScores();
+        const allScoresModal = new bootstrap.Modal(document.getElementById('allScoresModal'));
+        allScoresModal.show();
+    });
 
     function showGameOverModal() {
         clearTimeout(cloudTimeout);
@@ -391,7 +394,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (spikeFall) clearInterval(spikeFall); 
         cancelAnimationFrame(animationFrameId);
         endGame();
-
         document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes').forEach(item => item.remove());
     
         finalScore.textContent = score;
@@ -418,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         score = 0;
         updateScore(score);
-        timeRemaining = 60;
+        timeRemaining = 20;
         updateTimer(timeRemaining);
         heartsCollected = 0;
         doublePointsActive = false;
@@ -450,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         score = 0;
-        timeRemaining = 60;
+        timeRemaining = 10;
         updateScore(0);
         updateTimer(timeRemaining);
         isPaused = false;
@@ -702,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // <---------------------------------MAGNET-------------------------------------------->
 
-    const magnetRangeRadius = 250;
+    let magnetRangeRadius = 250;
 
     function createFallingMagnet() {
         if (isPaused || timeRemaining <= 0) return;
@@ -752,49 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
         magnetRangeElement.classList.remove('fade-out');
 
     
-        magnetInterval = setInterval(() => {
-            if (isPaused) return;
-            updateMagnetRangePosition();
-            const objects = [
-                ...document.querySelectorAll(".falling-heart"),
-                ...document.querySelectorAll(".falling-magnet"),
-                ...document.querySelectorAll(".falling-clock"),
-                ...document.querySelectorAll(".falling-shield"),
-                ...document.querySelectorAll(".falling-star"),
-            ];
-            objects.forEach((obj) => {
-                const objRect = obj.getBoundingClientRect();
-                const playerRect = player.getBoundingClientRect();
-              
-                const distX = objRect.left - playerRect.left;
-                const distY = objRect.top - playerRect.top;
-                const distance = Math.sqrt(distX * distX + distY * distY);
-              
-                if (distance < magnetRangeRadius) {
-                    const pullStrength = 0.1;
-                    obj.style.left = `${obj.offsetLeft - distX * pullStrength}px`;
-                    obj.style.top = `${obj.offsetTop - distY * pullStrength}px`;
-                }
-            });
-            let now = Date.now();
-            let remainingTime = magnetEndTime - now;
-            remainingMagnetDuration = remainingTime;
-    
-            if (remainingTime <= 0) {
-                clearInterval(magnetInterval);
-                magnetActive = false;
-                // console.log("Magnet effect ended.");
-                document.getElementById('magnet-timer').style.display = 'none';
-                document.getElementById('magnet-timer').textContent = '';
-                magnetRangeElement.classList.add('fade-out');
-                setTimeout(() => {
-                    magnetRangeElement.style.display = 'none';
-                }, 500);
-            } else {
-                document.getElementById('magnet-timer').style.display = 'block';
-                document.getElementById('magnet-timer').textContent = `🧲 ${Math.ceil(remainingTime / 1000)}s`;
-            }
-        }, 10);
+        startMagnetInterval()
     }
 
     function updateMagnetRangePosition() {
@@ -820,6 +780,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }    
     }
+
+    function startMagnetInterval(){
+        magnetInterval = setInterval(() => {
+            if (isPaused) return;
+
+            updateMagnetRangePosition();
+            const objects = [
+                ...document.querySelectorAll(".falling-heart"),
+                ...document.querySelectorAll(".falling-magnet"),
+                ...document.querySelectorAll(".falling-clock"),
+                ...document.querySelectorAll(".falling-shield"),
+                ...document.querySelectorAll(".falling-star"),
+            ];
+            objects.forEach((obj) => {
+                const objRect = obj.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+              
+                const distX = objRect.left - playerRect.left;
+                const distY = objRect.top - playerRect.top;
+                const distance = Math.sqrt(distX * distX + distY * distY);
+              
+                if (distance < magnetRangeRadius) {
+                    const pullStrength = 0.1;
+                    obj.style.left = `${obj.offsetLeft - distX * pullStrength}px`;
+                    obj.style.top = `${obj.offsetTop - distY * pullStrength}px`;
+                }
+            });
+            let now = Date.now();
+            let remainingTime = magnetEndTime - now;
+            remainingMagnetDuration = remainingTime;
+
+            if (remainingTime <= 0) {
+                clearInterval(magnetInterval);
+                magnetActive = false;
+                // console.log("Magnet effect ended.");
+                document.getElementById('magnet-timer').style.display = 'none';
+                document.getElementById('magnet-timer').textContent = '';
+                magnetRangeElement.classList.add('fade-out');
+                setTimeout(() => {
+                    magnetRangeElement.style.display = 'none';
+                }, 500);
+            } else {
+                document.getElementById('magnet-timer').style.display = 'block';
+                document.getElementById('magnet-timer').textContent = `🧲 ${Math.ceil(remainingTime / 1000)}s`;
+            }
+        }, 10);
+    }
     
     function resumeMagnetEffect() {
         if (magnetPaused && remainingMagnetDuration > 0) {
@@ -830,51 +837,8 @@ document.addEventListener('DOMContentLoaded', () => {
             magnetRangeElement.style.display = 'block';
             magnetRangeElement.classList.add('fade-in');
             magnetRangeElement.classList.remove('fade-out');
-    
-            magnetInterval = setInterval(() => {
-                if (isPaused) return;
-    
-                updateMagnetRangePosition();
-                const objects = [
-                    ...document.querySelectorAll(".falling-heart"),
-                    ...document.querySelectorAll(".falling-magnet"),
-                    ...document.querySelectorAll(".falling-clock"),
-                    ...document.querySelectorAll(".falling-shield"),
-                    ...document.querySelectorAll(".falling-star"),
-                ];
-                objects.forEach((obj) => {
-                    const objRect = obj.getBoundingClientRect();
-                    const playerRect = player.getBoundingClientRect();
-                  
-                    const distX = objRect.left - playerRect.left;
-                    const distY = objRect.top - playerRect.top;
-                    const distance = Math.sqrt(distX * distX + distY * distY);
-                  
-                    if (distance < magnetRangeRadius) {
-                        const pullStrength = 0.1;
-                        obj.style.left = `${obj.offsetLeft - distX * pullStrength}px`;
-                        obj.style.top = `${obj.offsetTop - distY * pullStrength}px`;
-                    }
-                });
-                let now = Date.now();
-                let remainingTime = magnetEndTime - now;
-                remainingMagnetDuration = remainingTime;
-    
-                if (remainingTime <= 0) {
-                    clearInterval(magnetInterval);
-                    magnetActive = false;
-                    // console.log("Magnet effect ended.");
-                    document.getElementById('magnet-timer').style.display = 'none';
-                    document.getElementById('magnet-timer').textContent = '';
-                    magnetRangeElement.classList.add('fade-out');
-                    setTimeout(() => {
-                        magnetRangeElement.style.display = 'none';
-                    }, 500);
-                } else {
-                    document.getElementById('magnet-timer').style.display = 'block';
-                    document.getElementById('magnet-timer').textContent = `🧲 ${Math.ceil(remainingTime / 1000)}s`;
-                }
-            }, 10);
+            startMagnetInterval()
+
         }
     }
     // <---------------------------------SPIKES-------------------------------------------->
@@ -1106,7 +1070,7 @@ document.addEventListener('DOMContentLoaded', () => {
         starCount--;
         document.getElementById('star-count').textContent = starCount;
 
-        const items = ['hearts', 'timer', 'shield', 'magnet'];
+        const items = ['hearts', 'timer'];
         const selectedItem = items[Math.floor(Math.random() * items.length)];
 
         const itemCountElement = document.getElementById(`${selectedItem}-count`);
@@ -1151,11 +1115,11 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'timer':
                 activateClockBoost();
                 break;
-            case 'shield':
-                activateInfiniteShield();
+            case '???':
+                // ???;
                 break;
-            case 'magnet':
-                activateExtendedMagnet();
+            case '???':
+                // ???;
                 break;
         }
     }
@@ -1167,12 +1131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'hearts':
                 deactivateTripleHeartBoost();
                 break;
-            case 'shield':
-                deactivateInfiniteShield();
-                break;
-            case 'magnet':
-                deactivateExtendedMagnet();
-                break;
         }
         currentPowerUp = null;
     }
@@ -1182,24 +1140,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveScore(score) {
         let scores = JSON.parse(localStorage.getItem('scores')) || [];
-        scores.push(score);
+        const scoreEntry = {
+            score: score,
+            date: new Date().toLocaleString() 
+        };
+        scores.push(scoreEntry);
         localStorage.setItem('scores', JSON.stringify(scores));
     }
-
+    
     function loadScores() {
         let scores = JSON.parse(localStorage.getItem('scores')) || [];
-        return scores.sort((a, b) => b - a);
+        return scores
+            .filter(entry => entry.score > 0) // Only keep scores greater than 0
+            .sort((a, b) => b.score - a.score); // Sort by score in descending order
     }
-
+    
+    
     function displayBestScores() {
         const scores = loadScores();
-        const bestScoresElement = document.getElementById('best-scores');
-        bestScoresElement.innerHTML = scores.map((score, index) => `<p>Score #${index + 1}: ${score}</p>`).join('');
+        const bestScoresElement = document.getElementById('all-scores');
+        bestScoresElement.innerHTML = scores
+            .map((entry, index) => `
+                <div class="score-entry">
+                    <span class="score-rank">#${index + 1}</span>
+                    <span class="score-value">${entry.score}</span>
+                    <span class="score-date">${entry.date}</span>
+                </div>
+            `)
+            .join('');
     }
+    
 
     function endGame() {
         saveScore(score);
         displayBestScores();
     }
-    
+
 });
