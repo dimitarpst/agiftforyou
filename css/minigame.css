@@ -61,8 +61,6 @@ body {
     transform: rotate(45deg);
 }
 
-
-
 #score, #timer {
     display: none;
     position: absolute;
@@ -110,7 +108,7 @@ body {
     border-bottom: none;
 }
 
-#play-again-btn, #go-back-btn {
+#play-again-btn, #go-back-btn,#view-all-scores-btn {
     padding: 10px 20px;
     font-size: 20px;
     font-family: 'Nerko One', cursive;
@@ -594,7 +592,6 @@ a:hover {
 }
 
 
-/* Mystery Box Styling */
 .mystery-box {
     position: relative;
     width: 100px;
@@ -604,7 +601,7 @@ a:hover {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    animation: shake 2s infinite; /* Shaking effect */
+    animation: shake 2s infinite;
 }
 
 .box-lid {
@@ -612,18 +609,18 @@ a:hover {
     top: -8px;
     width: 106%;
     height: 40%;
-    background-color: #ffb6c1; /* Lighter pink for the lid */
+    background-color: #ffb6c1;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     transform-origin: top center;
-    transition: transform 1s ease; /* Smooth transition for opening */
+    transition: transform 1s ease;
     box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
 }
 
 .box-body {
     width: 100%;
     height: 100%;
-    background-color: #ff69b4; /* Bright pink for the body */
+    background-color: #ff69b4;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     box-shadow: 0 0 20px rgba(255, 182, 193, 0.8), 0 0 30px rgba(255, 182, 193, 0.5);
@@ -646,7 +643,6 @@ a:hover {
     50% { transform: scale(1.1); opacity: 1; }
 }
 
-/* Increased Glowing and Shaking Animation */
 @keyframes glow {
     0%, 100% {
         box-shadow: 0 0 20px rgba(255, 182, 193, 0.8), 0 0 40px rgba(255, 105, 180, 0.6);
@@ -662,7 +658,6 @@ a:hover {
     75% { transform: translate(3px, -3px); }
 }
 
-/* Sparkle Effect */
 .sparkle-container {
     position: absolute;
     width: 100%;
@@ -676,7 +671,7 @@ a:hover {
     position: absolute;
     width: 8px;
     height: 8px;
-    background-color: #ffd700; /* Brighter sparkles */
+    background-color: #ffd700;
     border-radius: 50%;
     opacity: 0;
     animation: sparkleAnimation 1s ease-out infinite;
@@ -688,7 +683,6 @@ a:hover {
 }
 
 
-/* Modal Overlay */
 .item-modal {
     position: fixed;
     top: 0;
@@ -698,40 +692,36 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5); /* Dark overlay for focus */
+    background: rgba(0, 0, 0, 0.5); 
     z-index: 9999;
     cursor: pointer;
     animation: fadeIn 0.3s ease;
 }
 
-/* Modal Content */
 .item-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: transparent; /* No visible background for item content */
+    background: transparent;
     padding: 0;
     transform: scale(0.9);
     animation: scaleIn 0.4s ease forwards;
 }
 
-/* Item Image */
 .item-image {
     width: 150px;
     height: auto;
     margin-bottom: 10px;
 }
 
-/* Item Text */
 .item-text {
     font-size: 1.2em;
     font-family: 'Pacifico', cursive;
-    color: #ffd700; /* Gold text color for rare item */
+    color: #ffd700; 
     margin: 0;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -757,7 +747,6 @@ a:hover {
     100% { opacity: 1; transform: scale(1); }
 }
 
-/* Veil Modal Styling */
 .veil-modal {
     position: fixed;
     top: 0;
@@ -774,7 +763,7 @@ a:hover {
 
 .veil-content {
     width: 100%;
-    height: 0%; /* Start with 0% height */
+    height: 0%; 
     background: linear-gradient(to top, rgba(255, 182, 193, 0.8), transparent);
     position: relative;
     display: flex;
@@ -791,7 +780,6 @@ a:hover {
     animation: pulse 1.5s infinite;
 }
 
-/* Glow effect */
 .glow {
     position: absolute;
     bottom: 0;
@@ -808,8 +796,23 @@ a:hover {
 }
 
 
-/* Fade-out for veil */
 .veil-modal.fade-out {
     animation: fadeOut 0.5s forwards;
 }
 
+.avocado-mode {
+    background-image: url('../pictures/avocado.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.falling-avocado {
+    position: absolute;
+    top: 0;
+    animation: avocadoFallEffect 1s infinite linear;
+}
+
+@keyframes avocadoFallEffect {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0.8; }
+}

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const magnetRangeElement = document.getElementById('magnet-range');
     const mysteryBox = document.getElementById('mystery-box');
     const tapText = document.getElementById('tap-text');
+    const heartEmoji = "❤️";
 
     //LET variables
     let starCount = 10;
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let heartsCollected = 0;
     let shieldActive = false;
     let shieldStacks = 0;
-    let timeRemaining = 20;
+    let timeRemaining = 60;
     let timerInterval;
     let missedHearts = 0;
     let initialMagnetDuration = 8000;
@@ -332,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateScore(newScore) {
-        const heartEmoji = "❤️";
         scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
     }
 
@@ -352,6 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resumeGame() {
         isPaused = false;
+        if (powerUpPending && !avocadoRainInterval) {
+            startAvocadoPowerUpEffect();
+            powerUpPending = false; 
+        }
 
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -395,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (spikeFall) clearInterval(spikeFall); 
         cancelAnimationFrame(animationFrameId);
         endGame();
-        document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes').forEach(item => item.remove());
+        document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes, .falling-star').forEach(item => item.remove());
     
         finalScore.textContent = score;
         gameOverModal.show();
@@ -421,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         score = 0;
         updateScore(score);
-        timeRemaining = 20;
+        timeRemaining = 60;
         updateTimer(timeRemaining);
         heartsCollected = 0;
         doublePointsActive = false;
@@ -453,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         score = 0;
-        timeRemaining = 10;
+        timeRemaining = 60;
         updateScore(0);
         updateTimer(timeRemaining);
         isPaused = false;
@@ -639,7 +643,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('timer').textContent = `🕒 ${timeRemaining}s`;
     }
     
-    
     // <---------------------------------SHIELD-------------------------------------------->
 
     function createFallingShield() {
@@ -738,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function activateMagnetEffect() {
         if (magnetActive) {
             showFloatingText('+8s 🧲', player.offsetLeft, player.offsetTop, 'white');
-            remainingMagnetDuration += 6000;
+            remainingMagnetDuration += 8000;
             magnetEndTime = Date.now() + remainingMagnetDuration;
             // console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
@@ -792,6 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...document.querySelectorAll(".falling-clock"),
                 ...document.querySelectorAll(".falling-shield"),
                 ...document.querySelectorAll(".falling-star"),
+                ...document.querySelectorAll(".falling-avocado"),
             ];
             objects.forEach((obj) => {
                 const objRect = obj.getBoundingClientRect();
@@ -983,6 +987,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // <---------------------------------Avocados-------------------------------------------->
+    let powerUpPending = false;
+    let avocadoRainInterval;
+    let avocadoRainTimeLeft = 4000;
+
+    function activateAvocadoPowerUp() {
+        const player = document.getElementById('player');
+        player.classList.add('avocado-mode');
+
+        let startTime = performance.now();
+        let lastAvocadoTime = 0;
+
+        function avocadoRainLoop() {
+            if (isPaused) {
+                startTime = performance.now(); 
+                requestAnimationFrame(avocadoRainLoop);
+                return;
+            }
+
+            const currentTime = performance.now();
+            const elapsedTime = currentTime - startTime;
+
+            
+            if (elapsedTime >= 4000) {
+                player.classList.remove('avocado-mode');
+                avocadoRainTimeLeft = 4000;
+                return;
+            }
+
+            if (currentTime - lastAvocadoTime >= 500) {
+                createFallingAvocado();
+                lastAvocadoTime = currentTime; 
+            }
+
+            requestAnimationFrame(avocadoRainLoop);
+        }
+
+        avocadoRainLoop();
+    }
+
+    function createFallingAvocado() {
+        const avocado = document.createElement('div');
+        avocado.classList.add('falling-avocado');
+        avocado.style.backgroundImage = "url('pictures/avocado.png')";
+        avocado.style.backgroundSize = "contain";
+        avocado.style.backgroundRepeat = "no-repeat";
+        avocado.style.width = "50px";
+        avocado.style.height = "50px";
+        avocado.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+        gameArea.appendChild(avocado);
+
+        let avocadoFall = setInterval(() => {
+            if (isPaused) return;
+
+            let avocadoTop = parseInt(window.getComputedStyle(avocado).getPropertyValue('top'));
+
+            if (avocadoTop > gameArea.offsetHeight - 40) {
+                avocado.remove();
+                clearInterval(avocadoFall);
+            } else {
+                avocado.style.top = `${avocadoTop + fallingSpeed}px`;
+            }
+
+            if (checkTopCollision(player, avocado)) {
+                showFloatingText('+2 🥑', player.offsetLeft, player.offsetTop, 'green');
+                score += 2;
+                document.getElementById('score').textContent = score;
+                avocado.remove();
+                clearInterval(avocadoFall);
+            }
+        }, 20);
+    }
     // <---------------------------------PARTICLES-------------------------------------------->
 
     function showFloatingText(text, x, y, color = 'white') {
@@ -1024,8 +1100,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }); 
 
     // <---------------------------------Wishing-------------------------------------------->
-    let swipeCompleted = false; // Flag to lock swipe after the first wish
-
 
     function createFallingStar() {
         if (isPaused || timeRemaining <= 0) return;
@@ -1108,11 +1182,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     }
 
-
     function revealItem() {
         const items = [
             { id: 'hearts', name: 'Triple Heart Boost', image: 'pictures/heartWish.png' },
-            { id: 'timer', name: 'Clock Boost', image: 'pictures/clockWish.png' }
+            { id: 'timer', name: 'Clock Boost', image: 'pictures/clockWish.png' },
+            { id: 'avocado', name: 'Avocado Boost', image: 'pictures/avocadoWish.png' }
         ];
     
         const selectedItem = items[Math.floor(Math.random() * items.length)];
@@ -1154,37 +1228,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const veilContent = veilModal.querySelector('.veil-content');
         const glow = veilModal.querySelector('.glow');
     
-        // Start tracking the swipe
         veilModal.addEventListener('touchstart', (e) => {
             startY = e.touches[0].clientY;
-            veilContent.style.height = '0%'; // Reset veil height
+            veilContent.style.height = '0%';
         });
     
-        // Update veil reveal as user swipes
         veilModal.addEventListener('touchmove', (e) => handleSwipeUp(e, startY, veilContent, glow));
     
-        // Complete the swipe on release
         veilModal.addEventListener('touchend', () => finalizeReveal(veilModal));
     }
+
     function handleSwipeUp(e, startY, veilContent, glow) {
         const currentY = e.touches[0].clientY;
         const swipeDistance = startY - currentY;
-        const maxRevealHeight = 100; // Maximum height percentage
+        const maxRevealHeight = 100; 
     
-        // Calculate reveal progress without delay
         let revealPercentage = (swipeDistance / window.innerHeight) * 100;
         if (revealPercentage > maxRevealHeight) revealPercentage = maxRevealHeight;
         if (revealPercentage < 0) revealPercentage = 0;
     
-        // Update veil height and glow position instantly
         veilContent.style.height = `${revealPercentage}%`;
-        glow.style.bottom = `${revealPercentage - 10}%`; // Move glow with swipe progress
+        glow.style.bottom = `${revealPercentage - 10}%`; 
         glow.style.opacity = revealPercentage > 0 ? 1 : 0;
-    }
-    
+    }   
     
     function finalizeReveal(veilModal) {
-        if (parseFloat(veilModal.querySelector('.veil-content').style.height) >= 100) {
+        if (parseFloat(veilModal.querySelector('.veil-content').style.height) >= 50) {
             veilModal.classList.add('fade-out');
             veilModal.addEventListener('animationend', () => {
                 veilModal.remove();
@@ -1194,6 +1263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             veilModal.querySelector('.veil-content').style.height = '0%';
         }
     }
+
     function resetBox() {
         const boxLid = document.querySelector('.box-lid');
         boxLid.style.transform = 'rotate(0)';
@@ -1239,8 +1309,8 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'timer':
                 activateClockBoost();
                 break;
-            case '???':
-                // ???;
+            case 'avocado':
+                activateAvocadoPowerUp();
                 break;
             case '???':
                 // ???;
