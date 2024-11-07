@@ -21,10 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartGameBtn = document.getElementById('restart-game-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
     const magnetRangeElement = document.getElementById('magnet-range');
-    const wishButton = document.getElementById('wish-button');
+    const mysteryBox = document.getElementById('mystery-box');
+    const tapText = document.getElementById('tap-text');
 
     //LET variables
-    let starCount = 0;
+    let starCount = 10;
     let score = 0;
     let isPaused = false;
     let playerSpeed = 7;
@@ -700,7 +701,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (doubleHeartBoostActive) deactivateDoubleHeartBoost();
         if (tripleHeartBoostActive) deactivateTripleHeartBoost();
     }
-
     
     // <---------------------------------MAGNET-------------------------------------------->
 
@@ -1024,19 +1024,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }); 
 
     // <---------------------------------Wishing-------------------------------------------->
+    let swipeCompleted = false; // Flag to lock swipe after the first wish
+
 
     function createFallingStar() {
         if (isPaused || timeRemaining <= 0) return;
-    
+
         const star = document.createElement('div');
         star.classList.add('falling-star');
         star.innerHTML = '🌟';
         star.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
         gameArea.appendChild(star);
-    
+
         let starFall = setInterval(() => {
             if (isPaused) return;
-    
+
             let starTop = parseInt(window.getComputedStyle(star).getPropertyValue('top'));
             if (starTop > gameArea.offsetHeight - 40) {
                 star.remove();
@@ -1044,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 star.style.top = `${starTop + fallingSpeed}px`;
             }
-    
+
             if (checkTopCollision(player, star)) {
                 showFloatingText('+1 🌟', player.offsetLeft, player.offsetTop, 'yellow');
                 incrementStarCount();
@@ -1059,37 +1061,162 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('star-count').textContent = starCount;
     }
 
-    wishButton.addEventListener('click', wishForItem);
-
-    function wishForItem() {
+    mysteryBox.addEventListener('click', () => {
         if (starCount <= 0) {
             alert("You don't have enough stars to wish!");
             return;
         }
-
+    
         starCount--;
         document.getElementById('star-count').textContent = starCount;
+    
+        mysteryBox.classList.remove('shake');
+        tapText.style.display = 'none';
+    
+        openBox();
+    });
 
-        const items = ['hearts', 'timer'];
-        const selectedItem = items[Math.floor(Math.random() * items.length)];
-
-        const itemCountElement = document.getElementById(`${selectedItem}-count`);
-        itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
-
-        alert(`You received a ${selectedItem.replace(/^./, selectedItem[0].toUpperCase())} Power-Up!`);
+    function openBox() {
+        const boxLid = document.querySelector('.box-lid');
+        
+        boxLid.style.transition = 'transform 1.5s ease-out';
+        boxLid.style.transform = 'rotate(-45deg)';
+    
+        startSparkles();
+    
+        setTimeout(openVeil, 1500);
     }
+
+    function startSparkles() {
+        const sparkleContainer = document.createElement('div');
+        sparkleContainer.classList.add('sparkle-container');
+        document.getElementById('animation-section').appendChild(sparkleContainer);
+    
+        for (let i = 0; i < 30; i++) { 
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkleContainer.appendChild(sparkle);
+            
+            sparkle.style.left = `${Math.random() * 100}%`;
+            sparkle.style.top = `${Math.random() * 100}%`;
+            sparkle.style.animationDuration = `${0.5 + Math.random()}s`;
+            sparkle.style.backgroundColor = ['#ff69b4', '#ffd700', '#ff1493'][Math.floor(Math.random() * 3)]; 
+        }
+    
+        setTimeout(() => {
+            sparkleContainer.remove();
+        }, 1500);
+    }
+
+
+    function revealItem() {
+        const items = [
+            { id: 'hearts', name: 'Triple Heart Boost', image: 'pictures/heartWish.png' },
+            { id: 'timer', name: 'Clock Boost', image: 'pictures/clockWish.png' }
+        ];
+    
+        const selectedItem = items[Math.floor(Math.random() * items.length)];
+    
+        const itemCountElement = document.getElementById(`${selectedItem.id}-count`);
+        itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
+    
+        const itemModal = document.createElement('div');
+        itemModal.classList.add('item-modal');
+        itemModal.innerHTML = `
+            <div class="item-content">
+                <img src="${selectedItem.image}" alt="${selectedItem.name}" class="item-image">
+                <p class="item-text">You received a ${selectedItem.name}!</p>
+            </div>
+        `;
+        document.body.appendChild(itemModal);
+    
+        itemModal.addEventListener('click', () => {
+            itemModal.remove();
+            resetBox(); 
+            swipeCompleted = false;
+        });
+
+        
+    }
+
+    function openVeil() {
+        const veilModal = document.createElement('div');
+        veilModal.classList.add('veil-modal');
+        veilModal.innerHTML = `
+            <div class="veil-content">
+                <div class="glow"></div>
+                <p class="swipe-text">Swipe Up to Reveal</p>
+            </div>
+        `;
+        document.body.appendChild(veilModal);
+    
+        let startY;
+        const veilContent = veilModal.querySelector('.veil-content');
+        const glow = veilModal.querySelector('.glow');
+    
+        // Start tracking the swipe
+        veilModal.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            veilContent.style.height = '0%'; // Reset veil height
+        });
+    
+        // Update veil reveal as user swipes
+        veilModal.addEventListener('touchmove', (e) => handleSwipeUp(e, startY, veilContent, glow));
+    
+        // Complete the swipe on release
+        veilModal.addEventListener('touchend', () => finalizeReveal(veilModal));
+    }
+    function handleSwipeUp(e, startY, veilContent, glow) {
+        const currentY = e.touches[0].clientY;
+        const swipeDistance = startY - currentY;
+        const maxRevealHeight = 100; // Maximum height percentage
+    
+        // Calculate reveal progress without delay
+        let revealPercentage = (swipeDistance / window.innerHeight) * 100;
+        if (revealPercentage > maxRevealHeight) revealPercentage = maxRevealHeight;
+        if (revealPercentage < 0) revealPercentage = 0;
+    
+        // Update veil height and glow position instantly
+        veilContent.style.height = `${revealPercentage}%`;
+        glow.style.bottom = `${revealPercentage - 10}%`; // Move glow with swipe progress
+        glow.style.opacity = revealPercentage > 0 ? 1 : 0;
+    }
+    
+    
+    function finalizeReveal(veilModal) {
+        if (parseFloat(veilModal.querySelector('.veil-content').style.height) >= 100) {
+            veilModal.classList.add('fade-out');
+            veilModal.addEventListener('animationend', () => {
+                veilModal.remove();
+                revealItem(); 
+            });
+        } else {
+            veilModal.querySelector('.veil-content').style.height = '0%';
+        }
+    }
+    function resetBox() {
+        const boxLid = document.querySelector('.box-lid');
+        boxLid.style.transform = 'rotate(0)';
+        boxLid.style.transition = 'transform 0.8s ease-in-out';
+    
+        mysteryBox.classList.add('shake');
+        mysteryBox.classList.remove('flash-glow');
+        tapText.style.display = 'block';
+    }
+    
+
+    // <---------------------------------PowerUps-------------------------------------------->
 
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
-            const itemId = item.id.split('-')[0]; 
-
+            const itemId = item.id.split('-')[0];
             const itemCountElement = document.getElementById(`${itemId}-count`);
             let itemCount = parseInt(itemCountElement.textContent);
-
+    
             if (itemCount > 0) {
                 itemCount--;
                 itemCountElement.textContent = itemCount;
-
+    
                 activatePowerUp(itemId);
                 alert(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
             } else {
@@ -1097,9 +1224,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // <---------------------------------PowerUps-------------------------------------------->
-
 
     function activatePowerUp(itemId) {
         if (currentPowerUp) {

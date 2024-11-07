@@ -481,12 +481,36 @@ a:hover {
 
 @keyframes trailEffect {
     0% {
-        text-shadow: 0 0 5px rgba(255, 223, 0, 0.8), 0 0 10px rgba(255, 223, 0, 0.6), 0 0 15px rgba(255, 223, 0, 0.4);
+        text-shadow: 
+            0 0 10px rgba(255, 223, 0, 0.9), 
+            0 0 20px rgba(255, 159, 0, 0.8), 
+            0 0 30px rgba(255, 95, 0, 0.7), 
+            0 0 40px rgba(255, 223, 0, 0.6), 
+            0 0 50px rgba(255, 223, 0, 0.5);
+        transform: scale(1.1);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(255, 223, 0, 0.8), 
+            0 0 30px rgba(255, 159, 0, 0.7), 
+            0 0 45px rgba(255, 95, 0, 0.6), 
+            0 0 60px rgba(255, 223, 0, 0.5), 
+            0 0 75px rgba(255, 223, 0, 0.4);
+        transform: scale(1.2);
     }
     100% {
-        text-shadow: 0 0 20px rgba(255, 223, 0, 0);
+        text-shadow: 
+            0 0 20px rgba(255, 223, 0, 0), 
+            0 0 40px rgba(255, 159, 0, 0), 
+            0 0 60px rgba(255, 95, 0, 0), 
+            0 0 80px rgba(255, 223, 0, 0), 
+            0 0 100px rgba(255, 223, 0, 0);
+        transform: scale(1);
     }
 }
+
+
+
 
 #allScoresModal .modal-dialog {
     max-width: 100%;
@@ -567,5 +591,225 @@ a:hover {
     background: #ff6f91;
     border-radius: 8px;
     box-shadow: inset 0 0 6px rgba(255, 105, 180, 0.4);
+}
+
+
+/* Mystery Box Styling */
+.mystery-box {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    animation: shake 2s infinite; /* Shaking effect */
+}
+
+.box-lid {
+    position: absolute;
+    top: -8px;
+    width: 106%;
+    height: 40%;
+    background-color: #ffb6c1; /* Lighter pink for the lid */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    transform-origin: top center;
+    transition: transform 1s ease; /* Smooth transition for opening */
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+}
+
+.box-body {
+    width: 100%;
+    height: 100%;
+    background-color: #ff69b4; /* Bright pink for the body */
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.8), 0 0 30px rgba(255, 182, 193, 0.5);
+    animation: glow 1.5s infinite;
+}
+
+.tap-text {
+    position: absolute;
+    bottom: -40px;
+    font-size: 1.2em;
+    color: #ffffff;
+    font-family: 'Pacifico', cursive;
+    opacity: 0.8;
+    animation: pulseText 1s infinite;
+}
+
+
+@keyframes pulseText {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* Increased Glowing and Shaking Animation */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 182, 193, 0.8), 0 0 40px rgba(255, 105, 180, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 182, 193, 1), 0 0 50px rgba(255, 105, 180, 0.8);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 3px); }
+    75% { transform: translate(3px, -3px); }
+}
+
+/* Sparkle Effect */
+.sparkle-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+}
+
+.sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #ffd700; /* Brighter sparkles */
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkleAnimation 1s ease-out infinite;
+}
+
+@keyframes sparkleAnimation {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0); }
+}
+
+
+/* Modal Overlay */
+.item-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for focus */
+    z-index: 9999;
+    cursor: pointer;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content */
+.item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent; /* No visible background for item content */
+    padding: 0;
+    transform: scale(0.9);
+    animation: scaleIn 0.4s ease forwards;
+}
+
+/* Item Image */
+.item-image {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Item Text */
+.item-text {
+    font-size: 1.2em;
+    font-family: 'Pacifico', cursive;
+    color: #ffd700; /* Gold text color for rare item */
+    margin: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.7); }
+    to { transform: scale(1); }
+}
+
+
+.continue-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #ff66cc;
+    border: none;
+    cursor: pointer;
+}
+
+@keyframes reveal {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Veil Modal Styling */
+.veil-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.veil-content {
+    width: 100%;
+    height: 0%; /* Start with 0% height */
+    background: linear-gradient(to top, rgba(255, 182, 193, 0.8), transparent);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swipe-text {
+    position: absolute;
+    bottom: 20px;
+    font-size: 1.5em;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    animation: pulse 1.5s infinite;
+}
+
+/* Glow effect */
+.glow {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 105, 180, 0.6);
+}
+
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+
+/* Fade-out for veil */
+.veil-modal.fade-out {
+    animation: fadeOut 0.5s forwards;
 }
 
