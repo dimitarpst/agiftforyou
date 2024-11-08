@@ -88,30 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
 
-    document.getElementById('fullscreen-btn').addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            const gameArea = document.documentElement;
-            if (gameArea.requestFullscreen) {
-                gameArea.requestFullscreen();
-            } else if (gameArea.mozRequestFullScreen) {
-                gameArea.mozRequestFullScreen();
-            } else if (gameArea.webkitRequestFullscreen) {
-                gameArea.webkitRequestFullscreen();
-            } else if (gameArea.msRequestFullscreen) {
-                gameArea.msRequestFullscreen();
+    function toggleFullscreen() {
+        const gameArea = document.documentElement;
+    
+        // Check if the device is iOS
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+            // For other devices, use the standard `requestFullscreen`
+            if (!document.fullscreenElement) {
+                    gameArea.webkitEnterFullScreen();
+            } else {
+                    document.webkitExitFullscreen();
             }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { 
-                document.msExitFullscreen();
-            }
-        }
-    });
+    }
+    
+    document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+    
     function openPauseMenu() {
         pauseScore.textContent = score;
         volumeControl.value = volume;
@@ -1709,11 +1701,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
-    
-    
-    
-    
 
     selectedOutfit = localStorage.getItem('selectedOutfit') || 'basket';
     const outfit = outfits.find(o => o.id === selectedOutfit);
