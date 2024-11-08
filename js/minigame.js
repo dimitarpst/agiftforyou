@@ -260,10 +260,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let activeTouches = {}; 
     let touchOffsetX = 0;
-
+    
+    // Only enable player movement if the touch is within the player element
     gameArea.addEventListener('touchstart', (event) => {
+        event.preventDefault(); // Prevent default to avoid interruptions
         Array.from(event.touches).forEach((touch) => {
             const playerRect = player.getBoundingClientRect();
+            const pauseButtonRect = pauseBtn.getBoundingClientRect();
+            const inventoryButtonRect = inventoryBtn.getBoundingClientRect();
+    
             if (
                 touch.clientX >= playerRect.left &&
                 touch.clientX <= playerRect.right &&
@@ -272,9 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ) {
                 activeTouches[touch.identifier] = 'move';
                 touchOffsetX = touch.clientX - playerRect.left;
-            }
-            const pauseButtonRect = pauseBtn.getBoundingClientRect();
-            if (
+            } else if (
                 touch.clientX >= pauseButtonRect.left &&
                 touch.clientX <= pauseButtonRect.right &&
                 touch.clientY >= pauseButtonRect.top &&
@@ -282,29 +285,39 @@ document.addEventListener('DOMContentLoaded', () => {
             ) {
                 activeTouches[touch.identifier] = 'pause';
                 togglePause(); 
-                activeTouches = Object.fromEntries(
-                    Object.entries(activeTouches).filter(([id, type]) => type !== 'move')
-                );
+            } else if (
+                touch.clientX >= inventoryButtonRect.left &&
+                touch.clientX <= inventoryButtonRect.right &&
+                touch.clientY >= inventoryButtonRect.top &&
+                touch.clientY <= inventoryButtonRect.bottom
+            ) {
+                activeTouches[touch.identifier] = 'inventory';
+                inventoryModal.show(); 
+                togglePause('inventory');
             }
         });
     });
     
+    // Handle player movement only if it's an active touch and game is not paused
     gameArea.addEventListener('touchmove', (event) => {
+        event.preventDefault(); // Prevent default to avoid interruptions
         Array.from(event.touches).forEach((touch) => {
             if (activeTouches[touch.identifier] === 'move' && !isPaused) {
                 let newPlayerLeft = touch.clientX - touchOffsetX;
-    
                 newPlayerLeft = Math.max(0, Math.min(newPlayerLeft, gameArea.offsetWidth - player.offsetWidth));
                 player.style.left = `${newPlayerLeft}px`;
             }
         });
     });
-
+    
+    // Remove touch from activeTouches once it's ended
     gameArea.addEventListener('touchend', (event) => {
+        event.preventDefault();
         Array.from(event.changedTouches).forEach((touch) => {
             delete activeTouches[touch.identifier];
         });
     });
+    
     
 
     document.addEventListener('keydown', (e) => {
