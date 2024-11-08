@@ -1,0 +1,23 @@
+{
+    "name": "A Gift For You",
+    "short_name": "Gift Game",
+    "description": "A fun game for my girlfriend!",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ff6f91",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "pictures/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "pictures/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  
