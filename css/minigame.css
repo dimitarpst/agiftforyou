@@ -469,6 +469,7 @@ a:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+
 .falling-star {
     position: absolute;
     top: 0;
@@ -827,8 +828,8 @@ a:hover {
 
 .constellation-star,
 .taurus-star {
-    opacity: 0; /* Start as invisible */
-    animation: fadeIn 0.5s forwards; /* 0.5s fade-in animation */
+    opacity: 0; 
+    animation: fadeIn 0.5s forwards; 
 }
 
 @keyframes drawLine {
@@ -840,3 +841,87 @@ a:hover {
     }
 }
 
+.fullscreen-modal .modal-fullscreen {
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.outfits-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.outfit-card {
+    width: 30%;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.outfit-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.outfit-title.special {
+    color: #87CEEB; 
+    text-shadow: 0 0 5px #87CEEB;
+}
+
+.outfit-title.epic {
+    color: #8A2BE2;
+    text-shadow: 0 0 5px #8A2BE2;
+}
+
+.outfit-title.mythic {
+    color: #8B0000; 
+    text-shadow: 0 0 5px #8B0000;
+}
+
+.outfit-image {
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.progress-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #4caf50;
+}
+
+.score-text {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.select-button {
+    width: 80%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50; 
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.select-button.selected {
+    background-color: #ffa500;
+    cursor: default;
+}

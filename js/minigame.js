@@ -19,14 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const pauseScore = document.getElementById('pause-score');
     const volumeControl = document.getElementById('volume-control');
     const restartGameBtn = document.getElementById('restart-game-btn');
-    const exitGameBtn = document.getElementById('exit-game-btn');
     const magnetRangeElement = document.getElementById('magnet-range');
     const mysteryBox = document.getElementById('mystery-box');
     const tapText = document.getElementById('tap-text');
     const heartEmoji = "❤️";
 
     //LET variables
-    let starCount = 10;
+    let starCount = 0;
     let score = 0;
     let isPaused = false;
     let playerSpeed = 7;
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let doubleHeartBoostRemaining = 0;
     let tripleHeartBoostRemaining = 0;
     let powerUpUsedDuringPause = false; 
-
+    let starPowerUpPending = false;
 
     // <---------------------------------Orientation check-------------------------------------------->
 
@@ -156,9 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGame();
         pauseMenuModal.hide();
     });
-    exitGameBtn.addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
+
     goBackBtn.addEventListener('click', () => {
         window.location.href = 'index.html';
     });
@@ -172,8 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('magnetCollect'),
         document.getElementById('shieldBreak'),
         document.getElementById('shieldUpgrade'),
-        document.getElementById('swordAttack')
+        document.getElementById('swordAttack'),
+        document.getElementById('avocadoCollect'),
+        document.getElementById('avocadoCollectMagnet'),
+        document.getElementById('starCollect'),
+        document.getElementById('starCollectMagnet')
     ];
+
+    function playSoundEffect(soundId) {
+        const originalAudio = document.getElementById(soundId);
+        if (originalAudio) {
+            const soundClone = originalAudio.cloneNode(); // Clone the audio element
+            soundClone.volume = originalAudio.volume; // Set volume to match the original
+            soundClone.play(); // Play the cloned sound
+        }
+    }
+
 
     volumeControl.addEventListener('input', (e) => {
         volume = e.target.value;
@@ -261,9 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeTouches = {}; 
     let touchOffsetX = 0;
     
-    // Only enable player movement if the touch is within the player element
     gameArea.addEventListener('touchstart', (event) => {
-        event.preventDefault(); // Prevent default to avoid interruptions
+        event.preventDefault(); 
         Array.from(event.touches).forEach((touch) => {
             const playerRect = player.getBoundingClientRect();
             const pauseButtonRect = pauseBtn.getBoundingClientRect();
@@ -298,9 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Handle player movement only if it's an active touch and game is not paused
     gameArea.addEventListener('touchmove', (event) => {
-        event.preventDefault(); // Prevent default to avoid interruptions
+        event.preventDefault();
         Array.from(event.touches).forEach((touch) => {
             if (activeTouches[touch.identifier] === 'move' && !isPaused) {
                 let newPlayerLeft = touch.clientX - touchOffsetX;
@@ -310,15 +319,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Remove touch from activeTouches once it's ended
     gameArea.addEventListener('touchend', (event) => {
         event.preventDefault();
         Array.from(event.changedTouches).forEach((touch) => {
             delete activeTouches[touch.identifier];
         });
     });
-    
-    
 
     document.addEventListener('keydown', (e) => {
         keys[e.key] = true;
@@ -450,8 +456,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.falling-magnet').forEach(magnet => magnet.remove());
         document.querySelectorAll('.falling-spikes').forEach(spike => spike.remove());
         document.querySelectorAll('.pulsating-arrow').forEach(arrow => arrow.remove());
-        document.querySelectorAll('.falling-star').forEach(arrow => arrow.remove());
-    
+        document.querySelectorAll('.falling-star').forEach(star => star.remove());
+        document.querySelectorAll('.falling-avocado').forEach(avocado => avocado.remove());
+
         score = 0;
         updateScore(score);
         timeRemaining = 60;
@@ -471,9 +478,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
         spikePaused = false;
         spikeRemainingTime = 3000;
-    
+        starCount = 0;
+        document.getElementById('star-count').textContent = starCount;
         fallingSpeed = 2;
-    
+
+        document.getElementById('hearts-count').textContent = '0';
+        document.getElementById('timer-count').textContent = '0';
+        document.getElementById('avocado-count').textContent = '0';
+        document.getElementById('starconst-count').textContent = '0';
+
         if (doubleHeartBoostActive) deactivateDoubleHeartBoost();
         if (tripleHeartBoostActive) deactivateTripleHeartBoost();
 
@@ -503,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shieldCreationInterval = setInterval(() => createFallingShield(), Math.random() * 8000 + 13000);
         magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 1000 + 15000);
         spikeCreationInterval = setInterval(() => createFallingSpikes(), Math.random() * 20000 + 23000);
-        starCreationInterval = setInterval(createFallingStar, 6000);
+        starCreationInterval = setInterval(createFallingStar, 20000);
 
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -514,6 +527,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 1000);
         requestAnimationFrame(updatePlayerPosition);
+        updateTotalScore();
+
     }
 
     function updateTimer(time) {
@@ -558,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             if (checkTopCollision(player, heart)) {
                 const collectSound = magnetActive ? 'heartCollectMagnet' : 'heartCollect';
-                document.getElementById(collectSound).play();
+                playSoundEffect(collectSound);
     
                 let pointsToAdd = pointsPerHeart;
     
@@ -772,11 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showFloatingText('+8s 🧲', player.offsetLeft, player.offsetTop, 'white');
             remainingMagnetDuration += 8000;
             magnetEndTime = Date.now() + remainingMagnetDuration;
-            // console.log(`Magnet effect extended. New time left: ${Math.ceil(remainingMagnetDuration / 1000)}s`);
             return;
         }
         showFloatingText('+8s 🧲', player.offsetLeft, player.offsetTop, 'white');
-        // console.log("Magnet effect activated!");
         magnetActive = true;
         remainingMagnetDuration = initialMagnetDuration;
         magnetEndTime = Date.now() + remainingMagnetDuration;
@@ -804,7 +817,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(magnetTimeout);
             clearInterval(magnetInterval);
             magnetActive = false;
-            // console.log("Magnet effect paused. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
             magnetRangeElement.classList.add('fade-out');
             setTimeout(() => {
                 magnetRangeElement.style.display = 'none';
@@ -847,7 +859,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (remainingTime <= 0) {
                 clearInterval(magnetInterval);
                 magnetActive = false;
-                // console.log("Magnet effect ended.");
                 document.getElementById('magnet-timer').style.display = 'none';
                 document.getElementById('magnet-timer').textContent = '';
                 magnetRangeElement.classList.add('fade-out');
@@ -863,7 +874,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function resumeMagnetEffect() {
         if (magnetPaused && remainingMagnetDuration > 0) {
-            // console.log("Resuming magnet effect. Remaining duration: " + Math.ceil(remainingMagnetDuration / 1000) + "s");
             magnetPaused = false;
             magnetActive = true;
             magnetEndTime = Date.now() + remainingMagnetDuration;
@@ -1080,16 +1090,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (checkTopCollision(player, avocado)) {
+                const collectSound = magnetActive ? 'avocadoCollectMagnet' : 'avocadoCollect';
+                playSoundEffect(collectSound);
                 showFloatingText('+2 🥑', player.offsetLeft, player.offsetTop, 'green');
                 score += 2;
                 updateScore(score);
                 avocado.remove();
                 clearInterval(avocadoFall);
             }
+
         }, 20);
     }
     // <---------------------------------Constellation-------------------------------------------->
 
+    const shimmeringSound = new Audio('../audio/shimmering.wav');
+    shimmeringSound.loop = true; 
+    shimmeringSound.volume = 0.5;
     
     function showTaurusStartPoint() {
         const star = document.createElement('div');
@@ -1109,6 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTaurusAnimation() {
+        shimmeringSound.play();
         const taurusCoordinates = [
             { x: 230, y: 90 },    // 1  [0]
             { x: 200, y: 210 },   // 6  [1]
@@ -1156,6 +1173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         setTimeout(suckInStars, (taurusCoordinates.length + connections.length) * 300); 
+        
     }
     
     function drawLineBetweenStars(start, end) {
@@ -1194,6 +1212,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function suckInStars() {
+        shimmeringSound.pause();
+        shimmeringSound.currentTime = 0;
         const player = document.getElementById('player');
     
         document.querySelectorAll('.constellation-line').forEach((line) => {
@@ -1290,6 +1310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }); 
 
     // <---------------------------------Wishing-------------------------------------------->
+    const magicBoxOpenSound = new Audio('audio/magicBoxOpen.wav');
 
     function createFallingStar() {
         if (isPaused || timeRemaining <= 0) return;
@@ -1312,6 +1333,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (checkTopCollision(player, star)) {
+                const collectSound = magnetActive ? 'starCollectMagnet' : 'starCollect';
+                playSoundEffect(collectSound);
                 showFloatingText('+1 🌟', player.offsetLeft, player.offsetTop, 'yellow');
                 incrementStarCount();
                 star.remove();
@@ -1343,6 +1366,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function openBox() {
         const boxLid = document.querySelector('.box-lid');
         
+        magicBoxOpenSound.play(); 
+
         boxLid.style.transition = 'transform 1.5s ease-out';
         boxLid.style.transform = 'rotate(-45deg)';
     
@@ -1371,6 +1396,8 @@ document.addEventListener('DOMContentLoaded', () => {
             sparkleContainer.remove();
         }, 1500);
     }
+    const itemRevealSound = new Audio('audio/itemReveal.wav');
+
 
     function revealItem() {
         const items = [
@@ -1384,7 +1411,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const itemCountElement = document.getElementById(`${selectedItem.id}-count`);
         itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
-    
+        itemRevealSound.play();  // Play item reveal sound
+
         const itemModal = document.createElement('div');
         itemModal.classList.add('item-modal');
         itemModal.innerHTML = `
@@ -1403,6 +1431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         
     }
+    const veilSound = new Audio('audio/veil.wav');
 
     function openVeil() {
         const veilModal = document.createElement('div');
@@ -1414,7 +1443,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         document.body.appendChild(veilModal);
-    
+        veilSound.play();  // Play veil sound on modal open
+
         let startY;
         const veilContent = veilModal.querySelector('.veil-content');
         const glow = veilModal.querySelector('.glow');
@@ -1468,6 +1498,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------PowerUps-------------------------------------------->
 
+    const powerUpSound = new Audio('../audio/powerUp.wav');
+    powerUpSound.volume = 0.7;
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
             if (powerUpUsedDuringPause) {
@@ -1498,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     
         currentPowerUp = itemId;
-    
+        powerUpSound.play();
         switch (itemId) {
             case 'hearts':
                 activateTripleHeartBoost();
@@ -1542,10 +1574,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadScores() {
         let scores = JSON.parse(localStorage.getItem('scores')) || [];
         return scores
-            .filter(entry => entry.score > 0) // Only keep scores greater than 0
-            .sort((a, b) => b.score - a.score); // Sort by score in descending order
+            .filter(entry => entry.score > 0) 
+            .sort((a, b) => b.score - a.score); 
     }
-    
     
     function displayBestScores() {
         const scores = loadScores();
@@ -1560,11 +1591,132 @@ document.addEventListener('DOMContentLoaded', () => {
             `)
             .join('');
     }
-    
 
     function endGame() {
         saveScore(score);
         displayBestScores();
+        updateTotalScore();
     }
+
+    // <---------------------------------OUTFITS-------------------------------------------->
+    function updateTotalScore() {
+        const scores = loadScores();
+        const totalScore = scores.reduce((sum, entry) => sum + entry.score, 0);
+        localStorage.setItem('totalScore', totalScore);
+        checkOutfitUnlock(totalScore);
+    }
+    
+    const outfits = [
+        { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
+        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 1000, rarity: 'special' },
+        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 2000, rarity: 'epic' },
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 3000, rarity: 'mythic' }
+    ];
+    
+    function checkOutfitUnlock(totalScore) {
+        let savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
+    
+        savedOutfits.forEach(outfit => {
+            if (outfit.unlockScore && totalScore >= outfit.unlockScore) {
+                outfit.unlocked = true;
+            }
+        });
+    
+        localStorage.setItem('outfits', JSON.stringify(savedOutfits));
+    }
+    
+
+    let selectedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
+
+    function showOutfitsModal() {
+        const outfitsContainer = document.querySelector('.outfits-container');
+        outfitsContainer.innerHTML = ''; 
+    
+        const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
+        const totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
+    
+        savedOutfits.forEach(outfit => {
+            const progress = outfit.unlockScore ? Math.min((totalScore / outfit.unlockScore) * 100, 100) : 100;
+    
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'outfit-card');
+    
+            const progressContent = outfit.id !== 'basket'
+                ? `
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${progress}%;"></div>
+                    </div>
+                    <div class="score-text">${Math.min(totalScore, outfit.unlockScore)}/${outfit.unlockScore}</div>
+                  `
+                : `<div class="placeholder-container"><div class="placeholder" style="height: 30px;"></div></div>`;
+    
+            card.innerHTML = `
+                <div class="outfit-title ${outfit.rarity}">${outfit.label}</div>
+                <img src="${outfit.image}" alt="${outfit.label}" class="outfit-image ${outfit.unlocked ? 'unlocked' : 'locked'}">
+                ${progressContent}
+                <button class="select-button ${selectedOutfitId === outfit.id ? 'selected' : ''}" 
+                        ${outfit.unlocked || outfit.id === 'basket' ? '' : 'disabled'}>
+                    ${selectedOutfitId === outfit.id ? 'Selected' : 'Select'}
+                </button>
+            `;
+    
+            outfitsContainer.appendChild(card);
+    
+            const button = card.querySelector('.select-button');
+            button.addEventListener('click', () => selectOutfit(outfit.id, button));
+        });
+    
+        new bootstrap.Modal(document.getElementById('outfitsModal')).show();
+    }
+    
+    document.getElementById('outfits-btn').addEventListener('click', showOutfitsModal);
+    document.getElementById('pause-outfits-btn').addEventListener('click', showOutfitsModal);
+    
+    let selectedOutfit = 'basket'; 
+
+    function selectOutfit(outfitId, button) {
+        const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
+        const outfit = savedOutfits.find(o => o.id === outfitId);
+    
+    
+        if (outfitId !== 'basket' && !outfit.unlocked) {
+            showMessageModal("You don't have enough points to select this outfit");
+            return;
+        }
+    
+        if (selectedOutfitId === outfitId) {
+            return;
+        }
+    
+        selectedOutfitId = outfitId;
+        localStorage.setItem('selectedOutfit', selectedOutfitId);
+    
+        document.querySelectorAll('.select-button').forEach(btn => {
+            btn.classList.remove('selected');
+            btn.textContent = 'Select';
+        });
+    
+        button.classList.add('selected');
+        button.textContent = 'Selected';
+    
+        const playerElement = document.getElementById('player');
+        if (outfit) {
+            playerElement.style.backgroundImage = `url(${outfit.image})`;
+            if (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru') {
+                playerElement.style.bottom = '-5px';
+            } else {
+                playerElement.style.bottom = ''; 
+            }
+        }
+    }
+    
+    
+    
+    
+    
+
+    selectedOutfit = localStorage.getItem('selectedOutfit') || 'basket';
+    const outfit = outfits.find(o => o.id === selectedOutfit);
+    document.getElementById('player').style.backgroundImage = `url(${outfit.image})`;
 
 });
