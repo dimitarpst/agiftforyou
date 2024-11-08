@@ -89,23 +89,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
 
     function toggleFullscreen() {
-        const gameArea = document.documentElement;
-    
-        // Check if the device is iOS
+        const gameArea = document.getElementById('game-area');
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        
+    
         if (isIOS) {
-            // On iOS, apply CSS for full-screen mode without `requestFullscreen`
-            document.body.classList.toggle('ios-fullscreen');
+            if (!gameArea.classList.contains('ios-fullscreen-fix')) {
+                gameArea.classList.add('ios-fullscreen-fix');
+            } else {
+                gameArea.classList.remove('ios-fullscreen-fix');
+            }
         } else {
-            // For other devices, use the standard `requestFullscreen`
             if (!document.fullscreenElement) {
                 if (gameArea.requestFullscreen) {
                     gameArea.requestFullscreen();
                 } else if (gameArea.mozRequestFullScreen) {
                     gameArea.mozRequestFullScreen();
                 } else if (gameArea.webkitRequestFullscreen) {
-                    gameArea.webkitEnterFullscreen();
+                    gameArea.webkitRequestFullscreen();
                 } else if (gameArea.msRequestFullscreen) {
                     gameArea.msRequestFullscreen();
                 }

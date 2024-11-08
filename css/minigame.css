@@ -926,12 +926,13 @@ a:hover {
     cursor: default;
 }
 
-
-.ios-fullscreen {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+.ios-fullscreen-fix {
     position: fixed;
     top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1000;
+    background-color: #000; /* Or whatever background color suits your game */
 }
