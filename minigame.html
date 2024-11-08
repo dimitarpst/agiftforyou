@@ -15,9 +15,8 @@
 
     <!-- App icons for iOS -->
     <link rel="apple-touch-icon" href="/pictures/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/pictures/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/pictures/icon-180x180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/pictures/icon-167x167.png">
+    <link rel="apple-touch-icon" href="/pictures/icon-512x512.png">
+
 
     <!-- App title -->
     <title>Collect the Hearts</title>
@@ -233,13 +232,15 @@
     <script src="js/minigame.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
             })
-            .catch((error) => {
-              console.log('ServiceWorker registration failed: ', error);
+            .catch(error => {
+                console.error('Service Worker registration failed:', error);
             });
+        });
         }
       </script>
       
