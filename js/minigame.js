@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tripleHeartBoostActive = false;
     let doubleHeartBoostRemaining = 0;
     let tripleHeartBoostRemaining = 0;
+    let powerUpUsedDuringPause = false; 
 
 
     // <---------------------------------Orientation check-------------------------------------------->
@@ -227,6 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
         fallingSpeed = Math.min(fallingSpeed, maxSpeed);
     }
 
+    function showMessageModal(message) {
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        document.getElementById('messageModalBody').textContent = message;
+        messageModal.show();
+    }
+    
+
     // <---------------------------------MOVEMENT-------------------------------------------->
 
     document.addEventListener('keydown', (e) => {
@@ -352,11 +360,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resumeGame() {
         isPaused = false;
+
+        powerUpUsedDuringPause = false;
         if (powerUpPending && !avocadoRainInterval) {
             startAvocadoPowerUpEffect();
             powerUpPending = false; 
         }
+        if (starPowerUpPending) {
+            showTaurusStartPoint(); 
+            startTaurusAnimation();
+            starPowerUpPending = false; 
+        }
 
+        
         timerInterval = setInterval(() => {
             timeRemaining--;
             updateTimer(timeRemaining);
@@ -1053,12 +1069,173 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkTopCollision(player, avocado)) {
                 showFloatingText('+2 🥑', player.offsetLeft, player.offsetTop, 'green');
                 score += 2;
-                document.getElementById('score').textContent = score;
+                updateScore(score);
                 avocado.remove();
                 clearInterval(avocadoFall);
             }
         }, 20);
     }
+    // <---------------------------------Constellation-------------------------------------------->
+
+    
+    function showTaurusStartPoint() {
+        const star = document.createElement('div');
+        star.classList.add('constellation-star');
+        star.style.left = '410px'; 
+        star.style.top = '240px';
+        star.style.width = '35px';
+        star.style.height = '35px';
+        star.style.zIndex = '2';
+        star.style.filter = `
+            drop-shadow(0 0 5px #00e6e6)
+            drop-shadow(0 0 10px #00b8b8)
+            drop-shadow(0 0 15px #008c8c)
+        `;
+    
+        gameArea.appendChild(star);
+    }
+
+    function startTaurusAnimation() {
+        const taurusCoordinates = [
+            { x: 230, y: 90 },    // 1  [0]
+            { x: 200, y: 210 },   // 6  [1]
+            { x: 360, y: 140 },   // 2  [2]
+            { x: 420, y: 245 },   // 7  [3]
+            { x: 445, y: 200 },   // 3  [4]
+            { x: 450, y: 260 },   // 8  [5]
+            { x: 475, y: 220 },   // 4  [6]
+            { x: 495, y: 255 },   // 5  [7]
+            { x: 580, y: 285 },   // 9  [8]
+            { x: 525, y: 360 },   // 10 [9]
+            { x: 585, y: 390 },   // 11 [10]
+            { x: 720, y: 260 },   // 12 [11]
+            { x: 745, y: 310 },   // 13 [12]
+            { x: 760, y: 325 }    // 14 [13]
+        ];
+    
+        taurusCoordinates.forEach((coord, index) => {
+            setTimeout(() => {
+                const star = document.createElement('div');
+                star.classList.add('taurus-star');
+                star.style.position = 'absolute';
+                star.style.left = `${coord.x}px`;
+                star.style.top = `${coord.y}px`;
+                star.style.backgroundImage = "url('pictures/star.png')";
+                star.style.width = '20px';
+                star.style.height = '20px';
+                star.style.backgroundSize = 'cover';
+                star.style.backgroundPosition = 'center';
+                star.style.zIndex = '1';
+                gameArea.appendChild(star);
+            }, index * 500); 
+        });
+    
+        const connections = [
+            [0, 2], [2, 6], [4, 6], [6, 7], [1, 3], 
+            [3, 5], [5, 7], [7, 8], [8, 9], [9, 10], 
+            [8, 11], [11, 12], [12, 13]
+        ];
+    
+        connections.forEach(([start, end], index) => {
+            setTimeout(() => {
+                drawLineBetweenStars(taurusCoordinates[start], taurusCoordinates[end]);
+            }, index * 400 + 200);
+        });
+    
+        setTimeout(suckInStars, (taurusCoordinates.length + connections.length) * 300); 
+    }
+    
+    function drawLineBetweenStars(start, end) {
+        const line = document.createElement('div');
+        line.classList.add('constellation-line');
+        line.style.position = 'absolute';
+    
+        const startX = start.x + 10; 
+        const startY = start.y + 10;
+        const endX = end.x + 10;
+        const endY = end.y + 10;
+    
+        line.style.width = `${Math.hypot(endX - startX, endY - startY)}px`;
+        line.style.height = '2px';
+        line.style.backgroundColor = 'transparent';
+        line.style.left = `${startX}px`;
+        line.style.top = `${startY}px`;
+        line.style.transformOrigin = '0 0';
+        line.style.transform = `rotate(${Math.atan2(endY - startY, endX - startX)}rad)`;
+    
+        line.style.filter = `
+            drop-shadow(0 0 5px #00e6e6)
+            drop-shadow(0 0 10px #00b8b8)
+            drop-shadow(0 0 15px #008c8c)
+        `;
+    
+        line.style.overflow = 'hidden';
+        const animatedLine = document.createElement('div');
+        animatedLine.style.width = '100%';
+        animatedLine.style.height = '100%';
+        animatedLine.style.backgroundColor = '#00e6e6';
+        animatedLine.style.animation = 'drawLine 0.5s linear forwards';
+    
+        line.appendChild(animatedLine); 
+        gameArea.appendChild(line);
+    }
+
+    function suckInStars() {
+        const player = document.getElementById('player');
+    
+        document.querySelectorAll('.constellation-line').forEach((line) => {
+            line.style.transition = 'opacity 1s ease';
+            line.style.opacity = '0';
+            setTimeout(() => line.remove(), 500);
+        });
+    
+        const constellationStar = document.querySelector('.constellation-star');
+        if (constellationStar) {
+            constellationStar.style.transition = 'opacity 1s ease';
+            constellationStar.style.opacity = '0';
+            setTimeout(() => constellationStar.remove(), 500);
+        }
+    
+        document.querySelectorAll('.taurus-star').forEach((star, index) => {
+            setTimeout(() => {
+                star.style.transition = 'all 0.5s ease-in-out';
+    
+                function updateStarPosition() {
+                    const playerPosition = {
+                        x: player.offsetLeft + player.offsetWidth / 2,
+                        y: player.offsetTop + player.offsetHeight / 2,
+                    };
+    
+                    star.style.left = `${playerPosition.x}px`;
+                    star.style.top = `${playerPosition.y}px`;
+    
+                    if (document.body.contains(star)) {
+                        requestAnimationFrame(updateStarPosition);
+                    }
+                }
+    
+                updateStarPosition();
+    
+                star.addEventListener('transitionend', () => {
+                    score += 1;
+                    showFloatingText('+1 ⭐', player.offsetLeft, player.offsetTop, 'blue');
+                    updateScore(score);
+                    star.remove();
+                });
+            }, index * 100);
+        });
+    }
+
+    function activateStarPowerUp() {
+        starPowerUpPending = true; 
+    
+        if (!isPaused) { 
+            showTaurusStartPoint(); 
+            startTaurusAnimation();
+        }
+    }
+
+
     // <---------------------------------PARTICLES-------------------------------------------->
 
     function showFloatingText(text, x, y, color = 'white') {
@@ -1137,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mysteryBox.addEventListener('click', () => {
         if (starCount <= 0) {
-            alert("You don't have enough stars to wish!");
+            showMessageModal("You don't have enough stars to wish!");
             return;
         }
     
@@ -1186,7 +1363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const items = [
             { id: 'hearts', name: 'Triple Heart Boost', image: 'pictures/heartWish.png' },
             { id: 'timer', name: 'Clock Boost', image: 'pictures/clockWish.png' },
-            { id: 'avocado', name: 'Avocado Boost', image: 'pictures/avocadoWish.png' }
+            { id: 'avocado', name: 'Avocado Boost', image: 'pictures/avocadoWish.png' },
+            { id: 'starconst', name: 'Star Boost', image: 'pictures/starconstWish.png' }
         ];
     
         const selectedItem = items[Math.floor(Math.random() * items.length)];
@@ -1279,6 +1457,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
+            if (powerUpUsedDuringPause) {
+                showMessageModal("You can only activate one power-up per pause.");
+                return;
+            }
+
             const itemId = item.id.split('-')[0];
             const itemCountElement = document.getElementById(`${itemId}-count`);
             let itemCount = parseInt(itemCountElement.textContent);
@@ -1288,9 +1471,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemCountElement.textContent = itemCount;
     
                 activatePowerUp(itemId);
-                alert(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
+                showMessageModal(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
+                powerUpUsedDuringPause = true; 
             } else {
-                alert("You don't have any of this item to use!");
+                showMessageModal("You don't have any of this item to use!");
             }
         });
     });
@@ -1312,12 +1496,12 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'avocado':
                 activateAvocadoPowerUp();
                 break;
-            case '???':
-                // ???;
+            case 'starconst':
+                activateStarPowerUp();
                 break;
         }
     }
-    
+
     function deactivatePowerUp() {
         if (!currentPowerUp) return;
     

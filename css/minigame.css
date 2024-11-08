@@ -816,3 +816,27 @@ a:hover {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(0.8); opacity: 0.8; }
 }
+
+.constellation-star {
+    width: 20px;
+    height: 20px;
+    background-image: url('../pictures/star.png');
+    background-size: cover;
+    position: absolute;
+}
+
+.constellation-star,
+.taurus-star {
+    opacity: 0; /* Start as invisible */
+    animation: fadeIn 0.5s forwards; /* 0.5s fade-in animation */
+}
+
+@keyframes drawLine {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
