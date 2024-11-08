@@ -88,43 +88,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
 
-    function toggleFullscreen() {
-        const gameArea = document.getElementById('game-area');
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
-        if (isIOS) {
-            if (!gameArea.classList.contains('ios-fullscreen-fix')) {
-                gameArea.classList.add('ios-fullscreen-fix');
-            } else {
-                gameArea.classList.remove('ios-fullscreen-fix');
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            const gameArea = document.documentElement;
+            if (gameArea.requestFullscreen) {
+                gameArea.requestFullscreen();
+            } else if (gameArea.mozRequestFullScreen) {
+                gameArea.mozRequestFullScreen();
+            } else if (gameArea.webkitRequestFullscreen) {
+                gameArea.webkitRequestFullscreen();
+            } else if (gameArea.msRequestFullscreen) {
+                gameArea.msRequestFullscreen();
             }
         } else {
-            if (!document.fullscreenElement) {
-                if (gameArea.requestFullscreen) {
-                    gameArea.requestFullscreen();
-                } else if (gameArea.mozRequestFullScreen) {
-                    gameArea.mozRequestFullScreen();
-                } else if (gameArea.webkitRequestFullscreen) {
-                    gameArea.webkitRequestFullscreen();
-                } else if (gameArea.msRequestFullscreen) {
-                    gameArea.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { 
-                    document.msExitFullscreen();
-                }
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { 
+                document.msExitFullscreen();
             }
         }
-    }
-    
-    document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
-    
+    });
     function openPauseMenu() {
         pauseScore.textContent = score;
         volumeControl.value = volume;
