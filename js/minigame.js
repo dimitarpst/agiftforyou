@@ -93,13 +93,34 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Check if the device is iOS
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
+        
+        if (isIOS) {
+            // On iOS, apply CSS for full-screen mode without `requestFullscreen`
+            document.body.classList.toggle('ios-fullscreen');
+        } else {
             // For other devices, use the standard `requestFullscreen`
             if (!document.fullscreenElement) {
-                    gameArea.webkitEnterFullScreen();
+                if (gameArea.requestFullscreen) {
+                    gameArea.requestFullscreen();
+                } else if (gameArea.mozRequestFullScreen) {
+                    gameArea.mozRequestFullScreen();
+                } else if (gameArea.webkitRequestFullscreen) {
+                    gameArea.webkitEnterFullscreen();
+                } else if (gameArea.msRequestFullscreen) {
+                    gameArea.msRequestFullscreen();
+                }
             } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { 
+                    document.msExitFullscreen();
+                }
             }
+        }
     }
     
     document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
