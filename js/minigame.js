@@ -1103,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // <---------------------------------Constellation-------------------------------------------->
 
-    const shimmeringSound = new Audio('../audio/shimmering.mp3');
+    const shimmeringSound = new Audio('audio/shimmering.mp3');
     shimmeringSound.loop = true; 
     
     function showTaurusStartPoint() {
@@ -1497,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------PowerUps-------------------------------------------->
 
-    const powerUpSound = new Audio('../audio/powerUp.mp3');
+    const powerUpSound = new Audio('audio/powerUp.mp3');
     powerUpSound.volume = 0.7;
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
