@@ -885,6 +885,11 @@ a:hover {
     text-shadow: 0 0 5px #8B0000;
 }
 
+.outfit-title.avocado {
+    color: #21832a; 
+    text-shadow: 0 0 5px #21832a;
+}
+
 .outfit-image {
     height: 100px;
     margin-bottom: 10px;
@@ -934,5 +939,5 @@ a:hover {
     height: 100vh;
     overflow: hidden;
     z-index: 1000;
-    background-color: #000; /* Or whatever background color suits your game */
+    background-color: #000;
 }

@@ -1103,9 +1103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // <---------------------------------Constellation-------------------------------------------->
 
-    const shimmeringSound = new Audio('../audio/shimmering.wav');
+    const shimmeringSound = new Audio('../audio/shimmering.mp3');
     shimmeringSound.loop = true; 
-    shimmeringSound.volume = 0.5;
     
     function showTaurusStartPoint() {
         const star = document.createElement('div');
@@ -1498,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // <---------------------------------PowerUps-------------------------------------------->
 
-    const powerUpSound = new Audio('../audio/powerUp.wav');
+    const powerUpSound = new Audio('../audio/powerUp.mp3');
     powerUpSound.volume = 0.7;
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -1610,14 +1609,15 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
         { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 300, rarity: 'special' },
         { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 600, rarity: 'epic' },
-        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 1000, rarity: 'mythic' }
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 1000, rarity: 'mythic' },
+        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 1500, rarity: 'avocado' }
     ];
     
     function checkOutfitUnlock(totalScore) {
         let savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
     
         savedOutfits.forEach(outfit => {
-            if (outfit.unlockScore && totalScore >= outfit.unlockScore) {
+            if (!outfit.unlocked && totalScore >= outfit.unlockScore) {
                 outfit.unlocked = true;
             }
         });
@@ -1625,9 +1625,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('outfits', JSON.stringify(savedOutfits));
     }
     
-
     let selectedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
-
+    
     function showOutfitsModal() {
         const outfitsContainer = document.querySelector('.outfits-container');
         outfitsContainer.innerHTML = ''; 
@@ -1672,12 +1671,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('outfits-btn').addEventListener('click', showOutfitsModal);
     document.getElementById('pause-outfits-btn').addEventListener('click', showOutfitsModal);
     
-    let selectedOutfit = 'basket'; 
-
     function selectOutfit(outfitId, button) {
         const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
         const outfit = savedOutfits.find(o => o.id === outfitId);
-    
     
         if (outfitId !== 'basket' && !outfit.unlocked) {
             showMessageModal("You don't have enough points to select this outfit");
@@ -1702,16 +1698,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerElement = document.getElementById('player');
         if (outfit) {
             playerElement.style.backgroundImage = `url(${outfit.image})`;
-            if (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru') {
-                playerElement.style.bottom = '-5px';
-            } else {
-                playerElement.style.bottom = ''; 
-            }
+            playerElement.style.bottom = (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru'|| outfitId === 'avocado') ? '-5px' : '';
         }
     }
-
-    selectedOutfit = localStorage.getItem('selectedOutfit') || 'basket';
-    const outfit = outfits.find(o => o.id === selectedOutfit);
-    document.getElementById('player').style.backgroundImage = `url(${outfit.image})`;
+    
+    
 
 });
