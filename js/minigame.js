@@ -109,6 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+    document.getElementById('show-install-instructions-btn').addEventListener('click', () => {
+        document.getElementById('install-instructions').style.display = 'block';
+    });
+    
+    document.getElementById('close-instructions-btn').addEventListener('click', () => {
+        document.getElementById('install-instructions').style.display = 'none';
+    });
+    
 
 
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->

@@ -8,6 +8,12 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
+    <!-- Required for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Collect the Hearts">
+    <link rel="apple-touch-icon" href="pictures/icon-192x192.png">
+
 <script>
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("js/service-worker.js")
@@ -27,6 +33,18 @@
         <div class="overlay-content">
             <h1 class="game-title">Collect the Hearts</h1>
             <div class="buttonStart d-flex flex-column justify-content-center align-items-center">
+                <div id="install-instructions" class="overlay text-center" style="display: none;">
+                    <p style="color: #fff; font-size: 20px;">
+                        To install this app on your iPhone, tap the <strong>Share</strong> icon in Safari and select
+                        <strong>Add to Home Screen</strong>.
+                    </p>
+                    <button id="close-instructions-btn" class="btn btn-secondary">Close</button>
+                </div>
+                
+                <!-- Add a button to trigger instructions -->
+                <button id="show-install-instructions-btn" class="btn btn-primary"
+                    style="background-color: #4CAF50; border: none;">Add to Home Screen</button>
+                
                 <button id="install-app-btn" class="btn btn-primary mb-3 w-50"
                 style="background-color: #ff6f91; border: none; display: none;">Add to Home Screen</button>
                 <button id="play-game-btn" class="btn btn-primary w-75"
