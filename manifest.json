@@ -1,0 +1,22 @@
+{
+    "name": "Minigame - Collect the Hearts",
+    "short_name": "Minigame",
+    "description": "A fun game to collect hearts!",
+    "start_url": "./minigame.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ff69b4",
+    "icons": [
+      {
+        "src": "pictures/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "pictures/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

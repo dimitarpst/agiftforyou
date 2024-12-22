@@ -1607,10 +1607,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const outfits = [
         { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
-        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 300, rarity: 'special' },
-        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 600, rarity: 'epic' },
-        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 1000, rarity: 'mythic' },
-        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 1500, rarity: 'avocado' }
+        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 100, rarity: 'special' },
+        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 200, rarity: 'epic' },
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 300, rarity: 'mythic' },
+        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 400, rarity: 'avocado' }
     ];
     
     function checkOutfitUnlock(totalScore) {
