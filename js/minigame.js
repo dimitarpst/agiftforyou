@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryModal = new bootstrap.Modal(document.getElementById('inventoryModal'));
     const pauseMenuModal = new bootstrap.Modal(document.getElementById('pauseMenuModal'));
     const playAgainBtn = document.getElementById('play-again-btn');
-    const goBackBtn = document.getElementById('go-back-btn');
     const finalScore = document.getElementById('final-score');
     const pauseScore = document.getElementById('pause-score');
     const volumeControl = document.getElementById('volume-control');
@@ -178,10 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     restartGameBtn.addEventListener('click', () => {
         resetGame();
         pauseMenuModal.hide();
-    });
-
-    goBackBtn.addEventListener('click', () => {
-        window.location.href = 'index.html';
     });
 
     const audioElements = [
@@ -1284,7 +1279,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateStarPowerUp() {
         starPowerUpPending = true; 
-    
+        timeRemaining += 15;
+        updateTimer(timeRemaining);
+        showFloatingText("+15s 🕒", player.offsetLeft, player.offsetTop, "yellow");
         if (!isPaused) { 
             showTaurusStartPoint(); 
             startTaurusAnimation();
@@ -1525,50 +1522,60 @@ document.addEventListener('DOMContentLoaded', () => {
     powerUpSound.volume = 0.7;
     document.querySelectorAll('.inventory-item').forEach(item => {
         item.addEventListener('click', () => {
-            if (powerUpUsedDuringPause) {
-                showMessageModal("You can only activate one power-up per pause.");
-                return;
-            }
-
             const itemId = item.id.split('-')[0];
             const itemCountElement = document.getElementById(`${itemId}-count`);
             let itemCount = parseInt(itemCountElement.textContent);
     
             if (itemCount > 0) {
+                if (itemId === 'hearts' && tripleHeartBoostActive) {
+                    showMessageModal("Hearts Power-Up is already active and cannot be used again.");
+                    return;
+                }
+    
+                if (itemId === 'starconst' && starPowerUpPending) {
+                    showMessageModal("Constellation Power-Up can only be used once.");
+                    return;
+                }
+    
                 itemCount--;
                 itemCountElement.textContent = itemCount;
     
                 activatePowerUp(itemId);
                 showMessageModal(`${itemId.replace(/^./, itemId[0].toUpperCase())} Power-Up Activated!`);
-                powerUpUsedDuringPause = true; 
             } else {
                 showMessageModal("You don't have any of this item to use!");
             }
         });
     });
-
+    
     function activatePowerUp(itemId) {
         if (currentPowerUp) {
             deactivatePowerUp();
         }
-    
-        currentPowerUp = itemId;
-        powerUpSound.play();
         switch (itemId) {
             case 'hearts':
-                activateTripleHeartBoost();
+                if (!tripleHeartBoostActive) {
+                    activateTripleHeartBoost();
+                }
                 break;
             case 'timer':
                 activateClockBoost();
                 break;
             case 'avocado':
-                activateAvocadoPowerUp();
+                avocadoRainTimeLeft += 4000;
+                if (!avocadoRainInterval) {
+                    activateAvocadoPowerUp();
+                }
                 break;
             case 'starconst':
-                activateStarPowerUp();
+                if (!starPowerUpPending) {
+                    activateStarPowerUp();
+
+                }
                 break;
         }
     }
+
 
     function deactivatePowerUp() {
         if (!currentPowerUp) return;
@@ -1631,10 +1638,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const outfits = [
         { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
-        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 100, rarity: 'special' },
-        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 200, rarity: 'epic' },
-        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 300, rarity: 'mythic' },
-        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 400, rarity: 'avocado' }
+        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 25, rarity: 'special' },
+        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 50, rarity: 'epic' },
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 75, rarity: 'mythic' },
+        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 100, rarity: 'avocado' }
     ];
     
     function checkOutfitUnlock(totalScore) {

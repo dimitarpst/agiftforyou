@@ -7,7 +7,9 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: #ffe4e6;
+    background: url('../pictures/gamebackground.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: fixed; /* Ensure it doesn't scroll */
 }
 
 #player {
@@ -65,7 +67,7 @@ body {
     display: none;
     position: absolute;
     top: 10px;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 18px;
     color: #ff6f91;
     z-index: 9;
@@ -185,7 +187,7 @@ a:hover {
 .multiplier-modal .modal-content {
     text-align: center;
     color: white;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 50px;
     background: none;
 }
@@ -199,7 +201,7 @@ a:hover {
     position: absolute;
     top: 10px;
     left: 20px;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 18px;
     z-index: 9;
     background: linear-gradient(45deg, #ff9aa2, #ff6f91);
@@ -215,7 +217,7 @@ a:hover {
     position: absolute;
     top: 65px;
     left: 20px;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 18px;
     z-index: 9;
     background: linear-gradient(45deg, #ff9aa2, #ff6f91);
@@ -232,7 +234,7 @@ a:hover {
     position: absolute;
     top: 10px;
     left: 137px;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 18px;
     z-index: 9;
     background: linear-gradient(45deg, #ff9aa2, #ff6f91);
@@ -422,7 +424,7 @@ a:hover {
     background-color: #fce4ec;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     font-size: 30px;
     color: #ff6f91;
     display: flex;
@@ -464,7 +466,7 @@ a:hover {
     background-color: #ff6f91;
     color: white;
     font-size: 12px;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -563,7 +565,7 @@ a:hover {
     font-size: 1.3em;
     font-weight: bold;
     color: #ff69b4;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
 }
 
 .score-value {
@@ -633,7 +635,7 @@ a:hover {
     bottom: -40px;
     font-size: 1.2em;
     color: #ffffff;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     opacity: 0.8;
     animation: pulseText 1s infinite;
 }
@@ -718,7 +720,7 @@ a:hover {
 
 .item-text {
     font-size: 1.2em;
-    font-family: 'Pacifico', cursive;
+    font-family: 'Nerko One', cursive;
     color: #ffd700; 
     margin: 0;
 }
