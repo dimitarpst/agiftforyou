@@ -23,6 +23,9 @@
 </script>
 
     <title>Collect the Hearts</title>
+    <link
+    href="https://fonts.googleapis.com/css2?family=Pacifico&family=Caveat:wght@400;700&family=Nerko+One&display=swap"
+    rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/minigame.css">
     <link rel="stylesheet" href="css/backup.css">
@@ -33,17 +36,6 @@
         <div class="overlay-content">
             <h1 class="game-title">Collect the Hearts</h1>
             <div class="buttonStart d-flex flex-column justify-content-center align-items-center">
-                <div id="install-instructions" class="overlay text-center" style="display: none;">
-                    <p style="color: #fff; font-size: 20px;">
-                        To install this app on your iPhone, tap the <strong>Share</strong> icon in Safari and select
-                        <strong>Add to Home Screen</strong>.
-                    </p>
-                    <button id="close-instructions-btn" class="btn btn-secondary">Close</button>
-                </div>
-                
-                <!-- Add a button to trigger instructions -->
-                <button id="show-install-instructions-btn" class="btn btn-primary"
-                    style="background-color: #4CAF50; border: none;">Add to Home Screen</button>
                 
                 <button id="install-app-btn" class="btn btn-primary mb-3 w-50"
                 style="background-color: #ff6f91; border: none; display: none;">Add to Home Screen</button>
@@ -90,7 +82,7 @@
                     </h5>
                 </div>
                 <div class="modal-body text-center">
-                    <p style="font-family: 'Caveat', cursive; font-size: 25px; color: #ff6f91;">Your Score: <span
+                    <p style="font-family: 'Pacifico', cursive; font-size: 25px; color: #ff6f91;">Your Score: <span
                             id="final-score"></span></p>
                     <button id="play-again-btn" class="btn btn-primary"
                         style="background-color: #ff6f91; border: none;">Play Again</button>
@@ -127,13 +119,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <p style="font-family: 'Caveat', cursive; font-size: 25px; color: #ff6f91;">Current Score: <span
+                    <p style="font-family: 'Pacifico', cursive; font-size: 25px; color: #ff6f91;">Current Score: <span
                             id="pause-score"></span></p>
                     <label for="volume-control"
-                        style="font-family: 'Caveat', cursive; font-size: 20px; color: #ff6f91;">Volume: </label>
+                        style="font-family: 'Pacifico', cursive; font-size: 20px; color: #ff6f91;">Volume: </label>
                     <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
                     <br>
-                    <p style="font-family: 'Caveat', cursive; font-size: 20px; color: #ff6f91;">Sensitivity: <span
+                    <p style="font-family: 'Pacifico', cursive; font-size: 20px; color: #ff6f91;">Sensitivity: <span
                             id="sensitivity-value">7</span></p>
                     <input type="range" id="sensitivity-slider" min="1" max="30" step="1" value="7">
                     <br>
