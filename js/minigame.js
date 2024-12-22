@@ -87,6 +87,31 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', checkOrientation); 
 
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+
+        const installAppBtn = document.getElementById('install-app-btn');
+        installAppBtn.style.display = 'block';
+
+        installAppBtn.addEventListener('click', () => {
+            installAppBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+    });
+
+
+    // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
 
     document.getElementById('fullscreen-btn').addEventListener('click', () => {
         if (!document.fullscreenElement) {
