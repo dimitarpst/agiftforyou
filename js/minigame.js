@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     const savedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
 
-    // Apply the saved outfit to the player
     const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
     const savedOutfit = savedOutfits.find(o => o.id === savedOutfitId);
 
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     //LET variables
-    let starCount = 50;
+    let starCount = 0;
     let score = 0;
     let isPaused = false;
     let playerSpeed = 7;
@@ -1500,7 +1499,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const itemCountElement = document.getElementById(`${selectedItem.id}-count`);
         itemCountElement.textContent = parseInt(itemCountElement.textContent) + 1;
-        itemRevealSound.play();  // Play item reveal sound
+        itemRevealSound.play();
 
         const itemModal = document.createElement('div');
         itemModal.classList.add('item-modal');
@@ -1532,7 +1531,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         document.body.appendChild(veilModal);
-        veilSound.play();  // Play veil sound on modal open
+        veilSound.play();
 
         let startY;
         const veilContent = veilModal.querySelector('.veil-content');
@@ -1705,8 +1704,6 @@ document.addEventListener('DOMContentLoaded', () => {
         checkOutfitUnlock(totalScore);
     }
     
-
-    
     function checkOutfitUnlock(totalScore) {
         outfits.forEach(outfit => {
             if (!outfit.unlocked && totalScore >= outfit.unlockScore) {
@@ -1729,7 +1726,7 @@ document.addEventListener('DOMContentLoaded', () => {
         outfitsContainer.innerHTML = ''; 
         let oldScores = loadScores();
         let totalFromOldScores = oldScores.reduce((sum, entry) => sum + entry.score, 0);
-        let totalScore = totalFromOldScores + score; // <== add the current in-game score
+        let totalScore = totalFromOldScores + score; 
         const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
     
         savedOutfits.forEach(outfit => {
@@ -1771,14 +1768,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pause-outfits-btn').addEventListener('click', showOutfitsModal);
     
     function updateOutfitProgressOnTheFly() {
-        // Load all historical scores
         let oldScores = loadScores();
         let totalFromOldScores = oldScores.reduce((sum, entry) => sum + entry.score, 0);
         
-        // 'score' is your current run’s in-game score
         let liveTotal = totalFromOldScores + score;
     
-        // Unlock outfits if we have crossed thresholds during this run
         checkOutfitUnlock(liveTotal);
     }
 
@@ -1812,7 +1806,6 @@ document.addEventListener('DOMContentLoaded', () => {
             playerElement.style.bottom = (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru' || outfitId === 'avocado' || outfitId === 'cory') ? '-5px' : '';
         }
     }
-    
 
     const coryVoices = [
         new Audio('audio/coryVoice1.mp3'),
@@ -1837,26 +1830,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemCollectionCount = 0;
     const coryChristmasSong = new Audio('audio/coryChristmasSong.mp3');
     coryChristmasSong.volume = 0.7;
-    let allVoicesPlayed = false; // Flag to track if all voices have been played
-    let itemsAfterVoicesCollected = 0; // Counter for items collected after voicelines
+    let allVoicesPlayed = false; 
+    let itemsAfterVoicesCollected = 0; 
         
     function triggerCoryModal() {
-        togglePause(); // Pause the game
+        togglePause(); 
         const coryModal = new bootstrap.Modal(document.getElementById('coryModal'));
         coryModal.show();
     
-        // Save the state in local storage
         coryModalShown = true;
         localStorage.setItem('coryModalShown', JSON.stringify(coryModalShown));
     
-        // Reset for replay if needed
         playedCoryVoices.clear();
-        allVoicesPlayed = false; // Reset the flag
-        itemsAfterVoicesCollected = 0; // Reset counter
+        allVoicesPlayed = false; 
+        itemsAfterVoicesCollected = 0;
     }
     
     
-    let playedCoryVoices = new Set(); // Track played voices
+    let playedCoryVoices = new Set();
     function playCoryVoice() {
         if (selectedOutfitId === 'cory') {
             let availableVoices = coryVoices.filter((voice, index) => !playedCoryVoices.has(index));
@@ -1869,9 +1860,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 coryVoices[voiceIndex].play();
             }
     
-            // Check if all voices have been played
             if (playedCoryVoices.size === coryVoices.length) {
-                allVoicesPlayed = true; // Mark that all voices have been played
+                allVoicesPlayed = true;
             }
         }
     }
@@ -1896,99 +1886,98 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
 
+    // <---------------------------------Christmas update-------------------------------------------->
 
-function createFallingSnowflake() {
-    createFallingChristmasObject('falling-snowflake', '+1 ❄️', 1);
-}
+    function createFallingSnowflake() {
+        createFallingChristmasObject('falling-snowflake', '+1 ❄️', 1);
+    }
 
-function createFallingCandyCane() {
-    createFallingChristmasObject('falling-candycane', '+1 🍬', 1);
-}
+    function createFallingCandyCane() {
+        createFallingChristmasObject('falling-candycane', '+1 🍬', 1);
+    }
 
-function createFallingOrnament() {
-    createFallingChristmasObject('falling-ornament', '+1 🎄', 1);
-}
+    function createFallingOrnament() {
+        createFallingChristmasObject('falling-ornament', '+1 🎄', 1);
+    }
 
-function createFallingChristmasObject(className, floatingText, points) {
-    if (isPaused || score < 0) return;
+    function createFallingChristmasObject(className, floatingText, points) {
+        if (isPaused || score < 0) return;
 
-    const obj = document.createElement('div');
-    obj.classList.add(className);
-    obj.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
-    gameArea.appendChild(obj);
+        const obj = document.createElement('div');
+        obj.classList.add(className);
+        obj.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+        gameArea.appendChild(obj);
 
-    let objFall = setInterval(() => {
-        if (isPaused) return;
-
-        let objTop = parseInt(window.getComputedStyle(obj).getPropertyValue('top'));
-        if (objTop > gameArea.offsetHeight - 40) {
-            obj.remove();
-            clearInterval(objFall);
-        } else {
-            obj.style.top = `${objTop + fallingSpeed}px`;
-        }
-
-        if (checkTopCollision(player, obj)) {
-            playSoundEffect('heartCollect'); // Reuse heart collection sound
-            showFloatingText(floatingText, player.offsetLeft, player.offsetTop, 'green');
-            score += points;
-            updateScore(score);
-            obj.remove();
-            clearInterval(objFall);
-
-            // Increment Christmas items counter
-            christmasItemsCollected++;
-            if (christmasItemsCollected % 20 === 0) {
-                triggerSnowflakeShower();
-            }
-        }
-    }, 20);
-}
-
-function triggerSnowflakeShower() {
-    let snowflakesCreated = 0;
-    const totalSnowflakes = 25;
-    const pointsPerSnowflake = 1; 
-    let accumulatedPoints = 0;
-
-    const snowflakeInterval = setInterval(() => {
-        if (snowflakesCreated >= totalSnowflakes) {
-            clearInterval(snowflakeInterval);
-
-            score += accumulatedPoints;
-            updateScore(score);
-            return;
-        }
-
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('shower-snowflake');
-        snowflake.style.left = `${Math.random() * (gameArea.offsetWidth - 20)}px`;
-        snowflake.style.top = `0px`;
-        gameArea.appendChild(snowflake);
-
-        let snowflakeFall = setInterval(() => {
+        let objFall = setInterval(() => {
             if (isPaused) return;
 
-            let snowflakeTop = parseInt(window.getComputedStyle(snowflake).getPropertyValue('top'));
-            if (snowflakeTop > gameArea.offsetHeight - 20) {
-                snowflake.remove();
-                clearInterval(snowflakeFall);
+            let objTop = parseInt(window.getComputedStyle(obj).getPropertyValue('top'));
+            if (objTop > gameArea.offsetHeight - 40) {
+                obj.remove();
+                clearInterval(objFall);
+            } else {
+                obj.style.top = `${objTop + fallingSpeed}px`;
+            }
+
+            if (checkTopCollision(player, obj)) {
+                playSoundEffect('heartCollect'); 
+                showFloatingText(floatingText, player.offsetLeft, player.offsetTop, 'green');
+                score += points;
+                updateScore(score);
+                obj.remove();
+                clearInterval(objFall);
+
+                christmasItemsCollected++;
+                if (christmasItemsCollected % 20 === 0) {
+                    triggerSnowflakeShower();
+                }
+            }
+        }, 20);
+    }
+
+    function triggerSnowflakeShower() {
+        let snowflakesCreated = 0;
+        const totalSnowflakes = 25;
+        const pointsPerSnowflake = 1; 
+        let accumulatedPoints = 0;
+
+        const snowflakeInterval = setInterval(() => {
+            if (snowflakesCreated >= totalSnowflakes) {
+                clearInterval(snowflakeInterval);
+
+                score += accumulatedPoints;
+                updateScore(score);
                 return;
             }
 
-            snowflake.style.top = `${snowflakeTop + fallingSpeed}px`;
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('shower-snowflake');
+            snowflake.style.left = `${Math.random() * (gameArea.offsetWidth - 20)}px`;
+            snowflake.style.top = `0px`;
+            gameArea.appendChild(snowflake);
 
-        }, 20);
+            let snowflakeFall = setInterval(() => {
+                if (isPaused) return;
 
-        accumulatedPoints += pointsPerSnowflake;
+                let snowflakeTop = parseInt(window.getComputedStyle(snowflake).getPropertyValue('top'));
+                if (snowflakeTop > gameArea.offsetHeight - 20) {
+                    snowflake.remove();
+                    clearInterval(snowflakeFall);
+                    return;
+                }
 
-        showFloatingText('+1 ❄️', Math.random() * gameArea.offsetWidth, Math.random() * gameArea.offsetHeight / 2, 'blue');
+                snowflake.style.top = `${snowflakeTop + fallingSpeed}px`;
 
-        snowflakesCreated++;
-    }, 100); 
-}
+            }, 20);
+
+            accumulatedPoints += pointsPerSnowflake;
+
+            showFloatingText('+1 ❄️', Math.random() * gameArea.offsetWidth, Math.random() * gameArea.offsetHeight / 2, 'blue');
+
+            snowflakesCreated++;
+        }, 100); 
+    }
 
 
     
