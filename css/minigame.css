@@ -110,7 +110,7 @@ body {
     border-bottom: none;
 }
 
-#play-again-btn, #go-back-btn,#view-all-scores-btn {
+#play-again-btn, #go-back-btn,#view-all-scores-btn,#gameover-outfits-btn {
     padding: 10px 20px;
     font-size: 20px;
     font-family: 'Nerko One', cursive;

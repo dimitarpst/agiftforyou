@@ -150,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
+    document.getElementById('gameover-outfits-btn').addEventListener('click', () => {
+        showOutfitsModal();
+    });
 
     document.getElementById('fullscreen-btn').addEventListener('click', () => {
         if (!document.fullscreenElement) {
@@ -423,6 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateScore(newScore) {
         scoreDisplay.textContent = `${heartEmoji} ${newScore}`;
+        updateOutfitProgressOnTheFly();
     }
 
     function togglePause(source = 'pause') { 
@@ -495,8 +499,12 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(starCreationInterval);
         if (spikeFall) clearInterval(spikeFall); 
         cancelAnimationFrame(animationFrameId);
+        clearInterval(snowflakeCreationInterval);
+        clearInterval(candyCaneCreationInterval);
+        clearInterval(ornamentCreationInterval);
+
         endGame();
-        document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes, .falling-star').forEach(item => item.remove());
+        document.querySelectorAll('.falling-heart, .falling-clock, .falling-shield, .falling-magnet, .falling-spikes, .falling-star, .falling-snowflake, .falling-candycane, .falling-ornament').forEach(item => item.remove());
     
         finalScore.textContent = score;
         gameOverModal.show();
@@ -1719,9 +1727,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function showOutfitsModal() {
         const outfitsContainer = document.querySelector('.outfits-container');
         outfitsContainer.innerHTML = ''; 
-    
+        let oldScores = loadScores();
+        let totalFromOldScores = oldScores.reduce((sum, entry) => sum + entry.score, 0);
+        let totalScore = totalFromOldScores + score; // <== add the current in-game score
         const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
-        const totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
     
         savedOutfits.forEach(outfit => {
             const progress = outfit.unlockScore ? Math.min((totalScore / outfit.unlockScore) * 100, 100) : 100;
@@ -1761,6 +1770,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('outfits-btn').addEventListener('click', showOutfitsModal);
     document.getElementById('pause-outfits-btn').addEventListener('click', showOutfitsModal);
     
+    function updateOutfitProgressOnTheFly() {
+        // Load all historical scores
+        let oldScores = loadScores();
+        let totalFromOldScores = oldScores.reduce((sum, entry) => sum + entry.score, 0);
+        
+        // 'score' is your current run’s in-game score
+        let liveTotal = totalFromOldScores + score;
+    
+        // Unlock outfits if we have crossed thresholds during this run
+        checkOutfitUnlock(liveTotal);
+    }
+
     function selectOutfit(outfitId, button) {
         const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
         const outfit = savedOutfits.find(o => o.id === outfitId);
