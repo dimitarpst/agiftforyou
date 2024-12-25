@@ -892,6 +892,11 @@ a:hover {
     text-shadow: 0 0 5px #21832a;
 }
 
+.outfit-title.cory {
+    color: #1645f1; 
+    text-shadow: 0 0 5px #1645f1;
+}
+
 .outfit-image {
     height: 100px;
     margin-bottom: 10px;
@@ -942,4 +947,46 @@ a:hover {
     overflow: hidden;
     z-index: 1000;
     background-color: #000;
+}
+.select-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.falling-snowflake, .falling-candycane, .falling-ornament {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.falling-snowflake {
+    background-image: url('../pictures/snowflake.png');
+}
+.falling-candycane {
+    background-image: url('../pictures/candycane.png');
+}
+.falling-ornament {
+    background-image: url('../pictures/ornament.png');
+}
+
+.shower-snowflake {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-image: url('../pictures/snowflake.png'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

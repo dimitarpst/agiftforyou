@@ -23,6 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const tapText = document.getElementById('tap-text');
     const heartEmoji = "❤️";
 
+    const savedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
+
+    // Apply the saved outfit to the player
+    const savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
+    const savedOutfit = savedOutfits.find(o => o.id === savedOutfitId);
+
+    if (savedOutfit) {
+        player.style.backgroundImage = `url(${savedOutfit.image})`;
+        player.style.bottom = (savedOutfitId === 'pompompurin' || savedOutfitId === 'badbadtzmaru' || savedOutfitId === 'avocado' || savedOutfitId === 'cory') ? '-5px' : '';
+    }
+    let coryModalShown = JSON.parse(localStorage.getItem('coryModalShown')) || false;
+
+
     //LET variables
     let starCount = 0;
     let score = 0;
@@ -70,6 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let tripleHeartBoostRemaining = 0;
     let powerUpUsedDuringPause = false; 
     let starPowerUpPending = false;
+    let snowflakeCreationInterval, candyCaneCreationInterval, ornamentCreationInterval;
+    let christmasItemsCollected = 0;
 
     // <---------------------------------Orientation check-------------------------------------------->
 
@@ -85,7 +100,25 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('orientationchange', checkOrientation);
     window.addEventListener('resize', checkOrientation); 
 
-    // <---------------------------------PAUSE MENU AND BUTTONS-------------------------------------------->
+    // <---------------------------------MISC-------------------------------------------->
+    document.getElementById('copyEmailBtn').addEventListener('click', () => {
+        const email = 'dimmitar.petkovv@gmail.com';
+        navigator.clipboard.writeText(email)
+            .then(() => {
+                const copyButton = document.getElementById('copyEmailBtn');
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('btn-success');
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy';
+                    copyButton.classList.remove('btn-success');
+                }, 2000);
+            })
+            .catch(() => {
+                alert('Failed to copy email');
+            });
+    });
+    
+
     let deferredPrompt;
 
     window.addEventListener('beforeinstallprompt', (event) => {
@@ -209,6 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
         volume = e.target.value;
         audioElements.forEach(audio => {
             audio.volume = volume;
+        });
+        coryVoices.forEach(voice => {
+            voice.volume = volume;
         });
     });
 
@@ -477,6 +513,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.pulsating-arrow').forEach(arrow => arrow.remove());
         document.querySelectorAll('.falling-star').forEach(star => star.remove());
         document.querySelectorAll('.falling-avocado').forEach(avocado => avocado.remove());
+        document.querySelectorAll('.falling-snowflake').forEach(snowflake => snowflake.remove());
+        document.querySelectorAll('.falling-candycane').forEach(candycane => candycane.remove());
+        document.querySelectorAll('.falling-ornament').forEach(ornament => ornament.remove());
 
         score = 0;
         updateScore(score);
@@ -523,6 +562,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTimer(timeRemaining);
         isPaused = false;
         fallingSpeed = 2;
+        clearInterval(snowflakeCreationInterval);
+        clearInterval(candyCaneCreationInterval);
+        clearInterval(ornamentCreationInterval);
         if (heartCreationInterval) clearInterval(heartCreationInterval);
         if (clockCreationInterval) clearInterval(clockCreationInterval);
         startBtn.style.display = 'none';
@@ -536,6 +578,9 @@ document.addEventListener('DOMContentLoaded', () => {
         magnetCreationInterval = setInterval(createFallingMagnet, Math.random() * 1000 + 15000);
         spikeCreationInterval = setInterval(() => createFallingSpikes(), Math.random() * 20000 + 23000);
         starCreationInterval = setInterval(createFallingStar, 20000);
+        snowflakeCreationInterval = setInterval(createFallingSnowflake, Math.random() * 3000 + 5000);
+        candyCaneCreationInterval = setInterval(createFallingCandyCane, Math.random() * 4000 + 7000);
+        ornamentCreationInterval = setInterval(createFallingOrnament, Math.random() * 5000 + 8000);
 
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -613,7 +658,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 score += pointsToAdd;
                 heartsCollected++;
                 updateScore(score);
-    
+                onItemCollected();
+
                 if (!doubleHeartBoostActive && !tripleHeartBoostActive && heartsCollected >= nextDoublePointsThreshold) {
                     activateDoubleHeartBoost();
                     nextDoublePointsThreshold += Math.min(15 + Math.floor(score / 100), 25);
@@ -697,6 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeRemaining += 6;
                 clock.remove();
                 clearInterval(clockFall);
+                onItemCollected();
             }
         }, 20);
     }
@@ -733,6 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 activateShieldPower();
                 shield.remove();
                 clearInterval(shieldFall);
+                onItemCollected(); 
             }
         }, 20);
     }
@@ -797,6 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 activateMagnetEffect();
                 magnet.remove();
                 clearInterval(magnetFall);
+                onItemCollected(); 
             }
         }, 20);
     }
@@ -856,6 +905,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...document.querySelectorAll(".falling-shield"),
                 ...document.querySelectorAll(".falling-star"),
                 ...document.querySelectorAll(".falling-avocado"),
+                ...document.querySelectorAll(".falling-candycane"),
+                ...document.querySelectorAll(".falling-snowflake"),
+                ...document.querySelectorAll(".falling-ornament"),
+
             ];
             objects.forEach((obj) => {
                 const objRect = obj.getBoundingClientRect();
@@ -980,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 showGameOverModal();
                             }
                         }
-                    
+                        onItemCollected(); 
                         spike.remove();
                         clearInterval(spikeFall);
                     }
@@ -1116,6 +1169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScore(score);
                 avocado.remove();
                 clearInterval(avocadoFall);
+                onItemCollected(); 
             }
 
         }, 20);
@@ -1638,22 +1692,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const outfits = [
         { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
-        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 25, rarity: 'special' },
-        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 50, rarity: 'epic' },
-        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 75, rarity: 'mythic' },
-        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 100, rarity: 'avocado' }
+        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 100, rarity: 'special' },
+        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 200, rarity: 'epic' },
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 300, rarity: 'mythic' },
+        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 400, rarity: 'avocado' },
+        { id: 'secret', label: '???', image: 'pictures/secret.png', unlockScore: 500, rarity: 'secret' }
     ];
     
     function checkOutfitUnlock(totalScore) {
-        let savedOutfits = JSON.parse(localStorage.getItem('outfits')) || outfits;
-    
-        savedOutfits.forEach(outfit => {
+        outfits.forEach(outfit => {
             if (!outfit.unlocked && totalScore >= outfit.unlockScore) {
                 outfit.unlocked = true;
+                if (outfit.id === 'secret') {
+                    outfit.id = 'cory';
+                    outfit.label = 'CoryxKenshin';
+                    outfit.image = 'pictures/cory.png';
+                    outfit.rarity = 'cory';
+                }
             }
         });
-    
-        localStorage.setItem('outfits', JSON.stringify(savedOutfits));
+        localStorage.setItem('outfits', JSON.stringify(outfits));
     }
     
     let selectedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
@@ -1682,7 +1740,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             card.innerHTML = `
                 <div class="outfit-title ${outfit.rarity}">${outfit.label}</div>
-                <img src="${outfit.image}" alt="${outfit.label}" class="outfit-image ${outfit.unlocked ? 'unlocked' : 'locked'}">
+                <img src="${outfit.image}" alt="${outfit.label}" class="outfit-image img-fluid ${outfit.unlocked ? 'unlocked' : 'locked'}">
                 ${progressContent}
                 <button class="select-button ${selectedOutfitId === outfit.id ? 'selected' : ''}" 
                         ${outfit.unlocked || outfit.id === 'basket' ? '' : 'disabled'}>
@@ -1698,6 +1756,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         new bootstrap.Modal(document.getElementById('outfitsModal')).show();
     }
+    
     
     document.getElementById('outfits-btn').addEventListener('click', showOutfitsModal);
     document.getElementById('pause-outfits-btn').addEventListener('click', showOutfitsModal);
@@ -1729,10 +1788,188 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerElement = document.getElementById('player');
         if (outfit) {
             playerElement.style.backgroundImage = `url(${outfit.image})`;
-            playerElement.style.bottom = (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru'|| outfitId === 'avocado') ? '-5px' : '';
+            playerElement.style.bottom = (outfitId === 'pompompurin' || outfitId === 'badbadtzmaru' || outfitId === 'avocado' || outfitId === 'cory') ? '-5px' : '';
         }
     }
     
+
+    const coryVoices = [
+        new Audio('audio/coryVoice1.mp3'),
+        new Audio('audio/coryVoice2.mp3'),
+        new Audio('audio/coryVoice3.mp3'),
+        new Audio('audio/coryVoice4.mp3'),
+        new Audio('audio/coryVoice5.mp3'),
+        new Audio('audio/coryVoice6.mp3'),
+        new Audio('audio/coryVoice7.mp3'),
+        new Audio('audio/coryVoice8.mp3'),
+        new Audio('audio/coryVoice9.mp3'),
+        new Audio('audio/coryVoice10.mp3'),
+        new Audio('audio/coryVoice11.mp3'),
+        new Audio('audio/coryVoice12.mp3'),
+        new Audio('audio/coryVoice13.mp3'),
+        new Audio('audio/coryVoice14.mp3'),
+        new Audio('audio/coryVoice15.mp3')
+    ];
+    coryVoices.forEach(voice => {
+        voice.volume = 0.7;
+    });
+    let itemCollectionCount = 0;
+    const coryChristmasSong = new Audio('audio/coryChristmasSong.mp3');
+    coryChristmasSong.volume = 0.7;
+    let allVoicesPlayed = false; // Flag to track if all voices have been played
+    let itemsAfterVoicesCollected = 0; // Counter for items collected after voicelines
+        
+    function triggerCoryModal() {
+        togglePause(); // Pause the game
+        const coryModal = new bootstrap.Modal(document.getElementById('coryModal'));
+        coryModal.show();
+    
+        // Save the state in local storage
+        coryModalShown = true;
+        localStorage.setItem('coryModalShown', JSON.stringify(coryModalShown));
+    
+        // Reset for replay if needed
+        playedCoryVoices.clear();
+        allVoicesPlayed = false; // Reset the flag
+        itemsAfterVoicesCollected = 0; // Reset counter
+    }
+    
+    
+    let playedCoryVoices = new Set(); // Track played voices
+    function playCoryVoice() {
+        if (selectedOutfitId === 'cory') {
+            let availableVoices = coryVoices.filter((voice, index) => !playedCoryVoices.has(index));
+            
+            if (availableVoices.length > 0) {
+                let randomIndex = Math.floor(Math.random() * availableVoices.length);
+                let voiceIndex = coryVoices.indexOf(availableVoices[randomIndex]);
+                
+                playedCoryVoices.add(voiceIndex);
+                coryVoices[voiceIndex].play();
+            }
+    
+            // Check if all voices have been played
+            if (playedCoryVoices.size === coryVoices.length) {
+                allVoicesPlayed = true; // Mark that all voices have been played
+            }
+        }
+    }
+
+
+    function onItemCollected() {
+        itemCollectionCount++;
+    
+        if (coryModalShown) {
+            if (itemCollectionCount % 5 === 0) {
+                playCoryVoice();
+            }
+        } else {
+            if (allVoicesPlayed) {
+                itemsAfterVoicesCollected++;
+                if (itemsAfterVoicesCollected === 5) {
+                    coryChristmasSong.play();
+                    triggerCoryModal();
+                }
+            } else if (itemCollectionCount % 5 === 0) {
+                playCoryVoice();
+            }
+        }
+    }
+    
+
+
+function createFallingSnowflake() {
+    createFallingChristmasObject('falling-snowflake', '+1 ❄️', 1);
+}
+
+function createFallingCandyCane() {
+    createFallingChristmasObject('falling-candycane', '+1 🍬', 1);
+}
+
+function createFallingOrnament() {
+    createFallingChristmasObject('falling-ornament', '+1 🎄', 1);
+}
+
+function createFallingChristmasObject(className, floatingText, points) {
+    if (isPaused || score < 0) return;
+
+    const obj = document.createElement('div');
+    obj.classList.add(className);
+    obj.style.left = `${Math.random() * (gameArea.offsetWidth - 50)}px`;
+    gameArea.appendChild(obj);
+
+    let objFall = setInterval(() => {
+        if (isPaused) return;
+
+        let objTop = parseInt(window.getComputedStyle(obj).getPropertyValue('top'));
+        if (objTop > gameArea.offsetHeight - 40) {
+            obj.remove();
+            clearInterval(objFall);
+        } else {
+            obj.style.top = `${objTop + fallingSpeed}px`;
+        }
+
+        if (checkTopCollision(player, obj)) {
+            playSoundEffect('heartCollect'); // Reuse heart collection sound
+            showFloatingText(floatingText, player.offsetLeft, player.offsetTop, 'green');
+            score += points;
+            updateScore(score);
+            obj.remove();
+            clearInterval(objFall);
+
+            // Increment Christmas items counter
+            christmasItemsCollected++;
+            if (christmasItemsCollected % 20 === 0) {
+                triggerSnowflakeShower();
+            }
+        }
+    }, 20);
+}
+
+function triggerSnowflakeShower() {
+    let snowflakesCreated = 0;
+    const totalSnowflakes = 25;
+    const pointsPerSnowflake = 1; 
+    let accumulatedPoints = 0;
+
+    const snowflakeInterval = setInterval(() => {
+        if (snowflakesCreated >= totalSnowflakes) {
+            clearInterval(snowflakeInterval);
+
+            score += accumulatedPoints;
+            updateScore(score);
+            return;
+        }
+
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('shower-snowflake');
+        snowflake.style.left = `${Math.random() * (gameArea.offsetWidth - 20)}px`;
+        snowflake.style.top = `0px`;
+        gameArea.appendChild(snowflake);
+
+        let snowflakeFall = setInterval(() => {
+            if (isPaused) return;
+
+            let snowflakeTop = parseInt(window.getComputedStyle(snowflake).getPropertyValue('top'));
+            if (snowflakeTop > gameArea.offsetHeight - 20) {
+                snowflake.remove();
+                clearInterval(snowflakeFall);
+                return;
+            }
+
+            snowflake.style.top = `${snowflakeTop + fallingSpeed}px`;
+
+        }, 20);
+
+        accumulatedPoints += pointsPerSnowflake;
+
+        showFloatingText('+1 ❄️', Math.random() * gameArea.offsetWidth, Math.random() * gameArea.offsetHeight / 2, 'blue');
+
+        snowflakesCreated++;
+    }, 100); 
+}
+
+
     
 
 });
