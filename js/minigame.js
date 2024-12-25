@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     //LET variables
-    let starCount = 0;
+    let starCount = 50;
     let score = 0;
     let isPaused = false;
     let playerSpeed = 7;
@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function playSoundEffect(soundId) {
         const originalAudio = document.getElementById(soundId);
         if (originalAudio) {
-            const soundClone = originalAudio.cloneNode(); // Clone the audio element
-            soundClone.volume = originalAudio.volume; // Set volume to match the original
-            soundClone.play(); // Play the cloned sound
+            const soundClone = originalAudio.cloneNode();
+            soundClone.volume = originalAudio.volume; 
+            soundClone.play(); 
         }
     }
 
