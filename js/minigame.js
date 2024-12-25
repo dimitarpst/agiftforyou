@@ -22,7 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mysteryBox = document.getElementById('mystery-box');
     const tapText = document.getElementById('tap-text');
     const heartEmoji = "❤️";
-
+    const outfits = [
+        { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
+        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 100, rarity: 'special' },
+        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 200, rarity: 'epic' },
+        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 300, rarity: 'mythic' },
+        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 400, rarity: 'avocado' },
+        { id: 'secret', label: '???', image: 'pictures/secret.png', unlockScore: 500, rarity: 'secret' }
+    ];
     const savedOutfitId = localStorage.getItem('selectedOutfit') || 'basket';
 
     // Apply the saved outfit to the player
@@ -1690,14 +1697,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkOutfitUnlock(totalScore);
     }
     
-    const outfits = [
-        { id: 'basket', label: 'Default', image: 'pictures/basket.svg', unlockScore: 0, rarity: 'default' },
-        { id: 'badbadtzmaru', label: 'Special', image: 'pictures/badbadtzmaru.png', unlockScore: 100, rarity: 'special' },
-        { id: 'cinnamoroll', label: 'Epic', image: 'pictures/cinnamoroll.png', unlockScore: 200, rarity: 'epic' },
-        { id: 'pompompurin', label: 'Mythic', image: 'pictures/pompompurin.png', unlockScore: 300, rarity: 'mythic' },
-        { id: 'avocado', label: 'Avocado', image: 'pictures/avocado.png', unlockScore: 400, rarity: 'avocado' },
-        { id: 'secret', label: '???', image: 'pictures/secret.png', unlockScore: 500, rarity: 'secret' }
-    ];
+
     
     function checkOutfitUnlock(totalScore) {
         outfits.forEach(outfit => {
